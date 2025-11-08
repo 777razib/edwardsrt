@@ -325,11 +325,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _apiCallButton() async {
-    if (_formKey.currentState!.validate()) {
+    Get.offAll(SignInScreen());
+   /* if (_formKey.currentState!.validate()) {
       bool isSuccess = await signUpApiController.signUpApiMethod();
       if (isSuccess) {
         Get.offAll(SignInScreen());
       }
-    }
+    }*/
   }
 }

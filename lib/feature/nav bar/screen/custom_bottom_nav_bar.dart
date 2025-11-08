@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/app_colors.dart';
 import '../../home/screen/home_screen.dart';
 import '../../profile/screens/profile_screen.dart';     // সঠিক ইমপোর্ট
-import '../../search/screen/search_screen.dart';
+import '../../guide/screen/guide_screen.dart';
 
 class CustomBottomNavBar extends StatefulWidget {
   const CustomBottomNavBar({super.key});
@@ -16,7 +16,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
 
   final List<Widget> _screens = [
     HomeScreen(),
-    SearchScreen(),
+    GuideScreen(),
     //DiscoverScreen(),
     //MediaScreen(),
     ProfileScreen(),
@@ -76,7 +76,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildNavItem(0, Icons.home, Icons.home_outlined, 'Home'),
-          _buildNavItem(1, Icons.search, Icons.search_outlined, 'Search'),
+          _buildNavItem(1, Icons.note_alt, Icons.note_alt_outlined, 'Guide'),
           //const SizedBox(width: 60), // FAB-এর জন্য স্পেস
           //_buildNavItem(2, Icons.photo_library, Icons.photo_library_outlined, 'Media'),
           _buildNavItem(2, Icons.person, Icons.person_outlined, 'Profile'), // ✅ Fixed index (was 3)

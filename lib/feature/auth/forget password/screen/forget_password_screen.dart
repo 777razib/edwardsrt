@@ -123,12 +123,12 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   }
 
   Future<void> _otpApiCallMethod()async {
-
-    bool isSuccess=await  resetPasswordController.resetPasswordApiCallMethod();
+    Get.to(() => OtpScreen());
+    /*bool isSuccess=await  resetPasswordController.resetPasswordApiCallMethod();
     if(isSuccess) {
       Get.to(() => OtpScreen());
     }else {
       Get.snackbar("Error", "Something went wrong");
-    }
+    }*/
   }
 }

@@ -199,13 +199,15 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   Future<void> apiCallButton() async{
-      bool isSuccess=await otpController.otpApiCallMethod();
+    Get.to(() => CreateNewPasswordScreen());
+/*
+    bool isSuccess=await otpController.otpApiCallMethod();
   if(isSuccess){
       // Get the complete OTP using the getOtpString method
       final otp = accountTextEditingController.getOtpString();
       print('Entered OTP: $otp');
       Get.to(() => CreateNewPasswordScreen());
-  }
+  }*/
 
   }
 

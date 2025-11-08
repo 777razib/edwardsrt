@@ -98,7 +98,7 @@ class SearchTextApiController extends GetxController {
   /// Only GET request - backend auto-transcribes if needed
   Future<bool> searchTextApiMethod(String audioUrl, String query) async {
     if (query.trim().isEmpty) {
-      _errorMessage = 'Please enter a search term';
+      _errorMessage = 'Please enter a guide term';
       isSuccess(false);
       return false;
     }

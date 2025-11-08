@@ -43,7 +43,7 @@ class PrivacyPolicyWidget extends StatelessWidget {
             _SectionContent(
               content:
               '• Personal Information: Name, email, and profile details when you create an account.\n'
-                  '• Usage Data: Content you view, search history, and interaction patterns.\n'
+                  '• Usage Data: Content you view, guide history, and interaction patterns.\n'
                   '• Device Information: Device type, OS version, and unique identifiers.\n'
                   '• Location Data: Approximate location (if enabled) to improve recommendations.',
             ),

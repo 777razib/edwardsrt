@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/app_colors.dart';
 import '../../../choose interest/screen/choose_interest_screen.dart';
+import '../../../home/screen/home_screen.dart';
+import '../../../nav bar/screen/custom_bottom_nav_bar.dart';
 import '../../account text editing controller/account_text_editing_controller.dart';
 import '../../forget password/screen/forget_password_screen.dart';
 import '../../signup/screen/signup_screen.dart';
@@ -41,7 +43,7 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFDDF6EC),
+      backgroundColor: AppColors.whiteColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -51,7 +53,7 @@ class _SignInScreenState extends State<SignInScreen> {
               const SizedBox(height: 50),
 
               // Logo
-              Center(
+            /*  Center(
                 child: Container(
                   width: 110,
                   height: 110,
@@ -79,7 +81,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                   ),
                 ),
-              ),
+              ),*/
 
               const SizedBox(height: 16),
 
@@ -216,7 +218,8 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Future<void> _apiCallButton() async {
-    final isSuccess = await _loginCtrl.loginApiRiderMethod();
+    Get.offAll(() => const CustomBottomNavBar()); // Clears navigation stack
+    /*final isSuccess = await _loginCtrl.loginApiRiderMethod();
     if (isSuccess) {
       Get.offAll(() => const ChooseInterestScreen()); // Clears navigation stack
     } else {
@@ -226,6 +229,6 @@ class _SignInScreenState extends State<SignInScreen> {
         backgroundColor: Colors.red.withOpacity(0.1),
         colorText: Colors.red,
       );
-    }
+    }*/
   }
 }

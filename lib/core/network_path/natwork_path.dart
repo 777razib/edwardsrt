@@ -15,7 +15,7 @@ class Urls {
   static   String singleAudio(String id) => '$_baseUrl/episode/$id?show_transcript=1';
   static String searchingText(String url,String text){
     final encoded=Uri.encodeComponent(url);
-    return '$_baseUrl/search-any-topic?audio_url=$encoded&topic=$text';
+    return '$_baseUrl/guide-any-topic?audio_url=$encoded&topic=$text';
   }
 // network_path.dart
   static String audioSummary(String audioUrl) {

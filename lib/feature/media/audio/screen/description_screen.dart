@@ -277,7 +277,7 @@ class PodcastDescriptionScreen extends StatelessWidget {
   // সার্চ ফাংশন
   Future<void> _searchApiButton(String value) async {
     if (value.trim().isEmpty) {
-      Get.snackbar('Info', 'Please enter a search term', backgroundColor: Colors.orange);
+      Get.snackbar('Info', 'Please enter a guide term', backgroundColor: Colors.orange);
       return;
     }
 

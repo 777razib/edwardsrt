@@ -28,7 +28,7 @@ class ChooseInterestApiController extends GetxController {
     }
 
     if (interest == null || interest.trim().isEmpty) {
-      errorMessage.value = 'Please provide a search term';
+      errorMessage.value = 'Please provide a guide term';
       return;
     }
 
@@ -126,7 +126,7 @@ class ChooseInterestApiController extends GetxController {
     }
 
     if (interest == null || interest.trim().isEmpty) {
-      errorMessage.value = 'Please provide a search term';
+      errorMessage.value = 'Please provide a guide term';
       isLoading.value = false;
       return;
     }

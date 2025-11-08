@@ -142,7 +142,7 @@ class _ChooseInterestScreenState extends State<ChooseInterestScreen> {
 
     print("Searching podcasts for: $selectedNames");
 
-    // Combine all selected topics into one search query
+    // Combine all selected topics into one guide query
     final String searchQuery = selectedNames.join(' OR '); // e.g., "Travel OR Sports"
 
     // Show loading
@@ -174,6 +174,8 @@ class _ChooseInterestScreenState extends State<ChooseInterestScreen> {
   }*/
   // screen/choose_interest_screen.dart (fixed _apiCallButton)
   Future<void> _apiCallButton() async {
+    Get.offAll(() => const CustomBottomNavBar()); // ← NOW WORKS!
+/*
     final selectedNames = interests
         .where((e) => selectedIds.contains(e['id']))
         .map((e) => e['name'] as String)
@@ -201,6 +203,6 @@ class _ChooseInterestScreenState extends State<ChooseInterestScreen> {
       Get.snackbar("Error", "Check API key or internet");
     } finally {
       if (Get.isDialogOpen == true) Get.back();
-    }
+    }*/
   }
 }

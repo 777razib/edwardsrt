@@ -1,11 +1,12 @@
+import 'package:edwardsrt/core/app_colors.dart';
+import 'package:edwardsrt/core/style/text_style.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import '../../../core/app_colors.dart';
-import '../../choose interest/controller/choose_interest_api_controller.dart';
-import '../../media/audio/screen/audio_play.dart';
-import '../widget/audio_image_widget.dart';
 
-import 'package:intl/intl.dart'; // For date formatting
+import '../widget/app_bar.dart';
+import '../widget/audio_play_widget.dart';
+import '../widget/play_dialog_box_widget.dart';
+import '../widget/purchase_now_button_widget.dart';
+import '../widget/treatments_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,282 +16,154 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final ChooseInterestApiController controller = Get.find<ChooseInterestApiController>();
+  // Sample data
+  final List<Map<String, String>> treatments = [
+    {
+      'image': 'assets/images/image (1).png',
+      'title': 'Sleep Therapy',
+      'buttonText': 'HOW TO',
+    },
+    {
+      'image': 'assets/images/image (2).png',
+      'title': 'Stress Relief',
+      'buttonText': 'TRY NOW',
+    },
+    {
+      'image': 'assets/images/image (3).png',
+      'title': 'Mindfulness',
+      'buttonText': 'START',
+    },
+  ];
 
-  bool isVideo = false;
-  int selectedIndex = 0;
-  bool isLoading = false;
+  final List<Map<String, String>> topPlaylists = List.generate(10, (index) => {
+    'image': 'assets/images/image (2).png',
+    'title': 'Relax Session ${index + 1}',
+    'subTitle': '${5 + (index % 3) * 5}-10 Min',
+  });
 
-  // Use user's selected interests as categories
-  late List<String> categories;
+  int _currentlyPlayingIndex = -1;
 
-  @override
-  void initState() {
-    super.initState();
-
-    // Wait for episodes to load, then set categories
-    ever(controller.episodes, (_) {
-      if (controller.episodes.isNotEmpty && categories.isEmpty) {
-        _updateCategories();
-      }
+  void _onPlayToggle(int index, bool isPlaying) {
+    setState(() {
+      _currentlyPlayingIndex = isPlaying ? index : -1;
     });
-
-    // If already loaded
-    if (controller.episodes.isNotEmpty) {
-      _updateCategories();
-    }
+    debugPrint(isPlaying ? 'Playing $index' : 'Paused');
   }
 
-  void _updateCategories() {
-    // Extract unique podcast titles or use search terms
-    final Set<String> uniqueTitles = {};
-    for (var ep in controller.episodes) {
-      final title = ep.podcast?.titleOriginal ?? "Unknown";
-      uniqueTitles.add(title.split(" ").take(3).join(" ")); // Shorten long titles
-    }
-    categories = uniqueTitles.take(8).toList(); // Limit to 8
-    if (categories.isEmpty) categories = ["All Podcasts"];
-
-    setState(() {});
-
-    // Load first category
-    _loadEpisodesForCategory(categories.first);
-  }
-
-  void _loadEpisodesForCategory(String category) async {
-    setState(() => isLoading = true);
-
-    // Search by category name
-    await controller.chooseInterestApiMethod(interest: category);
-
-    setState(() => isLoading = false);
-  }
-
-  String _formatDate(int? timestampMs) {
-    if (timestampMs == null) return "Unknown";
-    final date = DateTime.fromMillisecondsSinceEpoch(timestampMs);
-    return DateFormat('MMM dd, yyyy').format(date);
-  }
-
-  String _formatDuration(int? seconds) {
-    if (seconds == null) return "";
-    final mins = seconds ~/ 60;
-    final secs = seconds % 60;
-    return "${mins}m ${secs}s";
+  // Correct: Defined outside build()
+  void _showPlaySessionDialog() {
+    showDialog(
+      context: context, // `context` already available in State
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child:  PlayDialogBoxWidget(),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFFF3),
-      body: Column(
-        children: [
-          const SizedBox(height: 60),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 58,
-                  height: 58,
-                  child: Image.asset("assets/icons/linly-high-resolution-logo 1.png"),
-                ),
-                const SizedBox(width: 10),
-                GestureDetector(
-                  onTap: () => setState(() => isVideo = !isVideo),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    width: 120,
-                    height: 45,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Align(
-                          alignment: isVideo ? Alignment.centerLeft : Alignment.centerRight,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Text(
-                              isVideo ? "List" : "Grid",
-                              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        ),
-                        AnimatedAlign(
-                          duration: const Duration(milliseconds: 300),
-                          alignment: isVideo ? Alignment.centerRight : Alignment.centerLeft,
-                          child: Container(
-                            width: 30,
-                            height: 30,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+      backgroundColor: AppColors.whiteColor,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // App Bar
+            const HomeAppBar(
+              profileImage: 'assets/images/WhatsApp Image 2025-11-08 at 10.06.03_1d0d3929.jpg',
+              title: "Hey John",
+              subtitle: "What do you want to hear today?",
             ),
-          ),
 
-          // Category Buttons (from API)
-          Obx(() => controller.episodes.isEmpty && controller.isLoading.value
-              ? const Padding(
-            padding: EdgeInsets.symmetric(vertical: 20),
-            child: CircularProgressIndicator(),
-          )
-              : Container(
-            margin: const EdgeInsets.symmetric(vertical: 12),
-            height: 45,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: categories.length,
-              itemBuilder: (context, index) {
-                final isSelected = selectedIndex == index;
-                return GestureDetector(
-                  onTap: () {
-                    setState(() => selectedIndex = index);
-                    _loadEpisodesForCategory(categories[index]);
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 6),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: isSelected ? AppColors.primary : Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.primary, width: 1.5),
+            // Scrollable Content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Purchase Card
+                    const PurchaseNowButtonWidget(
+                      title: "One purchase.",
+                      subTitle: "Endless relaxation",
+                      buttonText: "Purchase now",
+                      onTap: null,
                     ),
-                    child: Center(
-                      child: Text(
-                        categories[index],
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.black,
-                          fontWeight: FontWeight.w600,
-                        ),
+                    const SizedBox(height: 24),
+
+                    // Treatments Section
+                    Text(
+                      "Treatments",
+                      style: globalTextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.blackColor,
+                        fontSize: 16,
                       ),
                     ),
-                  ),
-                );
-              },
+                    const SizedBox(height: 12),
+
+                    // Horizontal Treatments
+                    SizedBox(
+                      height: 220,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: treatments.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 12),
+                        itemBuilder: (context, index) {
+                          final item = treatments[index];
+                          return TreatmentsWidget(
+                            image: item['image']!,
+                            title: item['title']!,
+                            buttonText: item['buttonText']!,
+                            onTap: _showPlaySessionDialog, // Correct callback
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+
+                    // Top Playlists Section
+                    Text(
+                      "Top Playlists",
+                      style: globalTextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.blackColor,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Vertical Audio List
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: topPlaylists.length,
+                      itemBuilder: (context, index) {
+                        final item = topPlaylists[index];
+                        final isPlaying = _currentlyPlayingIndex == index;
+
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: AudioPlayWidget(
+                            image: item['image']!,
+                            title: item['title']!,
+                            subTitle: item['subTitle']!,
+                            onPlayToggle: (playing) => _onPlayToggle(index, playing),
+                          ),
+                        );
+                      },
+                    ),
+
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
             ),
-          ),
-          ),
-
-          const SizedBox(height: 10),
-
-          // Content
-          Expanded(
-            child: Obx(() {
-              if (controller.isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (controller.errorMessage.value.isNotEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(controller.errorMessage.value),
-                      ElevatedButton(onPressed: controller.retry, child: Text("Retry")),
-                    ],
-                  ),
-                );
-              }
-
-              if (controller.episodes.isEmpty) {
-                return const Center(child: Text("No podcasts found"));
-              }
-
-              return isVideo
-                  ? _buildVideoList()
-                  : _buildAudioGrid();
-            }),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildVideoList() {
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: controller.episodes.length,
-      itemBuilder: (context, i) {
-        final ep = controller.episodes[i];
-        return AudioImageWidget(
-          title: ep.titleOriginal ?? "Untitled",
-          subTitle: "${_formatDuration(ep.audioLengthSec)} • ${ep.podcast?.publisherOriginal ?? ""}",
-          date: _formatDate(ep.pubDateMs),
-          episodes: "Episodes: 13",
-          imageUrl: ep.thumbnail ?? ep.image ?? "https://via.placeholder.com/327x144",
-          onTap: () {
-
-            final List<String> nearbyEpisodeIds = [ep.id.toString()]; // খালি রাখো না!
-
-            if (nearbyEpisodeIds.isEmpty) {
-              Get.to(() => MusicPlayerScreen(Id: ep.id.toString())); // পুরানো সিঙ্গেল Id ওয়ে
-            } else {
-              Get.to(() => MusicPlayerScreen(
-                episodeIds: nearbyEpisodeIds,
-                currentId: ep.id.toString(),
-              ));
-            }
-            // Pass audio URL to player
-            //Get.to(() => MusicPlayerScreen(Id: '${ep.id}',));
-            //Get.to(() => AudioListScreen(episodeId: ep.audio ?? ""));
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildAudioGrid() {
-    return RefreshIndicator(
-      onRefresh: () => controller.refresh(interest: categories[selectedIndex]),
-      child: GridView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 0.75,
+          ],
         ),
-        itemCount: controller.episodes.length,
-        itemBuilder: (context, i) {
-          final ep = controller.episodes[i];
-          return AudioImageWidget(
-            title: ep.titleOriginal ?? "Untitled",
-            subTitle: "${_formatDuration(ep.audioLengthSec)} • ${ep.podcast?.publisherOriginal ?? ""}",
-            date: _formatDate(ep.pubDateMs),
-            episodes: "Episodes: 13",
-            imageUrl: ep.thumbnail ?? ep.image ?? "https://via.placeholder.com/327x144",
-            onTap: () {
-
-              final List<String> nearbyEpisodeIds = [ep.id.toString()]; // খালি রাখো না!
-
-              if (nearbyEpisodeIds.isEmpty) {
-                Get.to(() => MusicPlayerScreen(Id: ep.id.toString())); // পুরানো সিঙ্গেল Id ওয়ে
-              } else {
-                Get.to(() => MusicPlayerScreen(
-                  episodeIds: nearbyEpisodeIds,
-                  currentId: ep.id.toString(),
-                ));
-              }
-              // Pass audio URL to player
-             //Get.to(() => MusicPlayerScreen(Id: '${ep.id}',));
-              //Get.to(() => AudioListScreen(episodeId: ep.audio ?? ""));
-            },
-          );
-        },
       ),
     );
   }
