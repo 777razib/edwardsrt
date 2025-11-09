@@ -53,10 +53,13 @@ class AudioWinerWidget extends StatelessWidget {
             ),
           ),
 
-          Center(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(24),
-              child: Text("“The heart heals, not by forgetting, but by forgiving and moving forward”",style: globalTextStyle(fontWeight: FontWeight.w600,color: AppColors.whiteColor,fontSize: 18),),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Text("“The heart heals, not by forgetting, but by forgiving and moving forward”",style: globalTextStyle(fontWeight: FontWeight.w600,color: AppColors.whiteColor,fontSize: 18),),
+              ),
             ),
           ),
 

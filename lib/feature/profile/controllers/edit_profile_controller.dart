@@ -1,5 +1,4 @@
 // lib/feature/profile/controllers/edit_profile_controller.dart
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/Get.dart';
 import 'package:file_picker/file_picker.dart';
@@ -23,7 +22,7 @@ class EditProfileController extends GetxController {
     lastNameCtrl = TextEditingController();
 
     final user = profileCtrl.userProfile.value;
-    if (user.first_name == null || user.first_name!.isEmpty) {
+    if (user.firstName == null || user.lastName!.isEmpty) {
       profileCtrl.getProfile().then((_) {
         _loadProfile();
         update();
@@ -36,7 +35,7 @@ class EditProfileController extends GetxController {
 
   void _loadProfile() {
     final user = profileCtrl.userProfile.value;
-    final fullName = "${user.first_name ?? ''} ${user.last_name ?? ''}".trim();
+    final fullName = "${user.firstName ?? ''} ${user.lastName ?? ''}".trim();
     final parts = fullName.split(' ');
 
     firstNameCtrl.text = parts.isNotEmpty ? parts[0] : '';

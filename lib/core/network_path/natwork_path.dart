@@ -1,14 +1,14 @@
 // lib/core/network_path/network_path.dart
 
 class Urls {
-  static const String _baseUrl = 'http://206.162.244.140:8033';
+  static const String _baseUrl = 'http://10.0.10.66:12021/api/v1';
 
   // Keep your auth URLs
   static const String login = '$_baseUrl/auth/login';
-  static const String authSignUp = '$_baseUrl/auth/signup';
-  static const String authForgetSendOtp = '$_baseUrl/auth/forget/send-otp';
-  static const String authFVerifyOtp = '$_baseUrl/auth/forget/verify-otp';
-  static const String authForgetResetPassword = '$_baseUrl/auth/forget/reset-password';
+  static const String authSignUp = '$_baseUrl/auth/register';
+  static const String authForgetSendOtp = '$_baseUrl/auth/forgot-password';
+  static const String authFVerifyOtp = '$_baseUrl/auth/verify-otp';
+  static const String authForgetResetPassword = '$_baseUrl/auth/reset-password';
   static const String getUserDataUrl = '$_baseUrl/user/me';
   static const String editUserDataUrl = '$_baseUrl/user/me/edit';
   static const String deleteUserDataUrl = '$_baseUrl/user/delete-my-profile';

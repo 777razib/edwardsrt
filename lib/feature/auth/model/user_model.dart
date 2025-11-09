@@ -1,22 +1,20 @@
 class UserModel {
   final String? id;
-  final String? first_name;
-  final String? last_name;
+  final String? firstName;
+  final String? lastName;
   final String? email;
   final String? phone;
   final String? password;
-  final String? confirm_password;
   final String? avatar;
 
   // Constructor
   const UserModel({
     this.id,
-    this.first_name,
-    this.last_name,
+    this.firstName,
+    this.lastName,
     this.email,
     this.phone,
     this.password,
-    this.confirm_password,
     this.avatar,
   });
 
@@ -24,12 +22,11 @@ class UserModel {
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: json['id'] as String?,
-      first_name: json['first_name'] as String?,
-      last_name: json['last_name'] as String?,
+      firstName: json['firstName'] as String?,
+      lastName: json['lastName'] as String?,
       email: json['email'] as String?,
       phone: json['phone'] as String?,
       password: json['password'] as String?,
-      confirm_password: json['confirm_password'] as String?,
       avatar: json['avatar'] as String?,
     );
   }
@@ -38,12 +35,11 @@ class UserModel {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'first_name': first_name,
-      'last_name': last_name,
+      'firstName': firstName,
+      'lastName': lastName,
       'email': email,
       'phone': phone,
       'password': password,
-      'confirm_password': confirm_password,
       'avatar': avatar,
     };
   }

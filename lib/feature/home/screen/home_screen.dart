@@ -1,7 +1,9 @@
 import 'package:edwardsrt/core/app_colors.dart';
 import 'package:edwardsrt/core/style/text_style.dart';
 import 'package:flutter/material.dart';
+import 'package:get/Get.dart';
 
+import '../../purchase/screen/purchase_one_time_screen.dart';
 import '../widget/app_bar.dart';
 import '../widget/audio_play_widget.dart';
 import '../widget/play_dialog_box_widget.dart';
@@ -86,11 +88,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Purchase Card
-                    const PurchaseNowButtonWidget(
+                     PurchaseNowButtonWidget(
                       title: "One purchase.",
                       subTitle: "Endless relaxation",
                       buttonText: "Purchase now",
-                      onTap: null,
+                      onTap: (){
+                        Get.to(()=>PurchaseOneTimeScreen());
+                      },
                     ),
                     const SizedBox(height: 24),
 

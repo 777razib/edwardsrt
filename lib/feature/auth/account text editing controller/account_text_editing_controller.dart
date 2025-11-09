@@ -12,7 +12,6 @@ class AccountTextEditingController extends GetxController {
   final phoneController = TextEditingController();
   final rollController = TextEditingController();
   final passwordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
   final newPasswordController = TextEditingController();
 
   // OTP কন্ট্রোলার
@@ -69,7 +68,6 @@ class AccountTextEditingController extends GetxController {
     phoneController.dispose();
     rollController.dispose();
     passwordController.dispose();
-    confirmPasswordController.dispose();
     newPasswordController.dispose();
 
     // OTP কন্ট্রোলার

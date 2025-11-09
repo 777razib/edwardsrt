@@ -53,6 +53,10 @@ dependencies:
   flutter_easyloading: ^3.0.5
   flutter_dotenv: ^6.0.0
   just_audio: ^0.9.36
+  url_launcher: ^6.2.6
+
+  flutter_localizations:
+    sdk: flutter
 
 
 dev_dependencies:
@@ -76,6 +80,7 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  generate: true # l10n এর জন্য
 
   # To add assets to your application, add an assets section, like this:
   assets:

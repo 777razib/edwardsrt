@@ -1,9 +1,8 @@
 // lib/feature/profile/ui/profile_screen.dart
 import 'package:flutter/material.dart';
-import 'package:get/Get.dart';
+import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../core/app_colors.dart';
-import '../../auth/login/screen/signin_screen.dart';
 import '../../auth/model/user_model.dart';
 import '../controllers/profile_controller.dart';
 import '../widget/about_us_widget.dart';
@@ -22,13 +21,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     controller.getProfile();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFF3),
       body: SingleChildScrollView(
@@ -41,7 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // Profile Header
             Obx(() {
               final user = controller.userProfile.value;
-              final fullName = "${user.first_name ?? ''} ${user.last_name ?? ''}".trim();
+              final fullName = "${user.firstName ?? ''} ${user.lastName ?? ''}".trim();
               final hasProfile = fullName.isNotEmpty;
 
               if (!hasProfile && !controller.isLoading.value) {
@@ -79,9 +77,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Guest User', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text('Guest User'.tr, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
-                Text('Login to see profile', style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
+                Text('Login to see profile'.tr, style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
               ],
             ),
           ),
@@ -90,7 +88,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ← controller পাস করুন
   Widget _buildProfileCard(UserModel user, String fullName, ProfileApiController controller) {
     return Container(
       width: double.infinity,
@@ -134,7 +131,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             icon: Icon(Icons.edit, color: AppColors.primary),
             onPressed: () async {
               if (fullName.isEmpty) {
-                await controller.getProfile(); // ← এখন কাজ করবে
+                await controller.getProfile();
               }
               Get.to(() => const EditProfilePage());
             },
@@ -181,26 +178,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildMenuSection(BuildContext context, ProfileApiController controller) {
-    final items = [
-      _MenuItem('Personal Details', Icons.person_outline, () async {
+    final personalItems = [
+      _MenuItem('Personal Details'.tr, Icons.person_outline, () async {
         final user = controller.userProfile.value;
-        final fullName = "${user.first_name ?? ''} ${user.last_name ?? ''}".trim();
+        final fullName = "${user.firstName ?? ''} ${user.lastName ?? ''}".trim();
         if (fullName.isEmpty) {
           await controller.getProfile();
         }
         Get.to(() => const EditProfilePage());
       }),
-      _MenuItem('About Us', Icons.info_outline, () => Get.to(() => const AboutUsWidget())),
-      _MenuItem('Privacy Policy', Icons.privacy_tip_outlined, () => Get.to(() => const PrivacyPolicyWidget())),
-      _MenuItem('Log Out', Icons.logout, () => _showLogoutDialog(context, controller), isDanger: true),
-      _MenuItem('Delete Account', Icons.delete_forever, () => _showDeleteDialog(context, controller), isDanger: true),
+      _MenuItem('About Us'.tr, Icons.info_outline, () => Get.to(() => const AboutUsWidget())),
+      _MenuItem('Privacy Policy'.tr, Icons.privacy_tip_outlined, () => Get.to(() => const PrivacyPolicyWidget())),
+      _MenuItem('Change Language'.tr, Icons.language, () => _showLanguageDialog()),
+    ];
+
+    final accountItems = [
+      _MenuItem('Log Out'.tr, Icons.logout, () => _showLogoutDialog(context, controller), isDanger: true),
+      _MenuItem('Delete Account'.tr, Icons.delete_forever, () => _showDeleteDialog(context, controller), isDanger: true),
     ];
 
     return Column(
       children: [
-        _buildMenuCard("Personal Info", items.take(3).toList()),
+        _buildMenuCard("Personal Info".tr, personalItems),
         const SizedBox(height: 16),
-        _buildMenuCard("Account Actions", items.skip(3).toList(), isDanger: true),
+        _buildMenuCard("Account Actions".tr, accountItems, isDanger: true),
       ],
     );
   }
@@ -250,40 +251,66 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _showLanguageDialog() {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text('Change Language'.tr),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildLanguageOption('English', const Locale('en')),
+              _buildLanguageOption('Arabic', const Locale('ar')),
+              _buildLanguageOption('Hindi', const Locale('hi')),
+              _buildLanguageOption('Chinese', const Locale('zh')),
+              _buildLanguageOption('Turkish', const Locale('tr')),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: Text('Cancel'.tr)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLanguageOption(String language, Locale locale) {
+    final isSelected = Get.locale?.languageCode == locale.languageCode;
+    return ListTile(
+      title: Text(language),
+      trailing: isSelected ? const Icon(Icons.check, color: AppColors.primary) : null,
+      onTap: () {
+        Get.updateLocale(locale);
+        Get.back(); // Close dialog
+      },
+    );
+  }
+
   void _showLogoutDialog(BuildContext context, ProfileApiController controller) {
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Log Out'),
-        content: const Text('Are you sure?'),
+        title: Text('Log Out'.tr),
+        content: Text('Are you sure?'.tr),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(onPressed: () => Get.back(), child: Text('Cancel'.tr)),
           TextButton(
             onPressed: () async {
-              Get.back(); // প্রথমে AlertDialog বন্ধ
-
-              // লোডিং ডায়লগ দেখাও
-              Get.dialog(
-                const Center(child: CircularProgressIndicator()),
-                barrierDismissible: false,
-              );
-
+              Get.back();
+              Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
               final success = await controller.logout();
-
-              // লোডিং ডায়লগ বন্ধ করো (যদি থাকে)
               if (Get.isDialogOpen == true) Get.back();
-
-              // শুধু ফেল হলে snackbar — সাকসেসে কিছু না
               if (!success) {
                 Get.snackbar(
-                  'Error',
-                  'Logout failed',
+                  'Error'.tr,
+                  'Logout failed'.tr,
                   backgroundColor: Colors.red,
                   colorText: Colors.white,
                 );
               }
             },
-            child: const Text('Log Out', style: TextStyle(color: Colors.red)),
+            child: Text('Log Out'.tr, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -295,19 +322,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Delete Account'),
-        content: const Text('This cannot be undone.'),
+        title: Text('Delete Account'.tr),
+        content: Text('This cannot be undone.'.tr),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(onPressed: () => Get.back(), child: Text('Cancel'.tr)),
           TextButton(
             onPressed: () async {
               Get.back();
               Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
               final success = await controller.deleteAccount();
               if (Get.isDialogOpen == true) Get.back();
-              if (!success) Get.snackbar('Error', 'Delete failed', backgroundColor: Colors.red, colorText: Colors.white);
+              if (!success) Get.snackbar('Error'.tr, 'Delete failed'.tr, backgroundColor: Colors.red, colorText: Colors.white);
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text('Delete'.tr, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),

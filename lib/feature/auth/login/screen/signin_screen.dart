@@ -3,8 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/app_colors.dart';
-import '../../../choose interest/screen/choose_interest_screen.dart';
-import '../../../home/screen/home_screen.dart';
 import '../../../nav bar/screen/custom_bottom_nav_bar.dart';
 import '../../account text editing controller/account_text_editing_controller.dart';
 import '../../forget password/screen/forget_password_screen.dart';
