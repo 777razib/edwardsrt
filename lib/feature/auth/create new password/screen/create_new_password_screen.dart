@@ -117,7 +117,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
             SizedBox(height: 8),
             TextField(
               obscureText: _obscureConfirmPassword,
-              controller: accountTextEditingController.confirmPasswordController,
+              controller: accountTextEditingController.passwordController,
               decoration: InputDecoration(
                 focusedBorder: OutlineInputBorder(  // Blue on focus
                   borderRadius: BorderRadius.circular(8),

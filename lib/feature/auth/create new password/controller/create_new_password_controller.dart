@@ -20,7 +20,6 @@ class AddNewPassword extends GetxController {
 
     final email = accountTextEditingController.emailController.text.trim();
     final newPassword = accountTextEditingController.newPasswordController.text;
-    final confirmPassword = accountTextEditingController.confirmPasswordController.text;
 
     // Validation
     if (email.isEmpty) {
@@ -29,17 +28,17 @@ class AddNewPassword extends GetxController {
       return false;
     }
 
-    if (newPassword.isEmpty || confirmPassword.isEmpty) {
+    if (newPassword.isEmpty ) {
       _errorMessage = "Please fill both password fields.";
       update();
       return false;
     }
 
-    if (newPassword != confirmPassword) {
+   /* if (newPassword != confirmPassword) {
       _errorMessage = "Passwords do not match.";
       update();
       return false;
-    }
+    }*/
 
     if (newPassword.length < 8) {
       _errorMessage = "Password must be at least 8 characters.";
@@ -50,8 +49,7 @@ class AddNewPassword extends GetxController {
     try {
       Map<String, dynamic> mapBody = {
         "email": email,
-        "new_password": newPassword,
-        "confirm_password": confirmPassword,
+        "password": newPassword,
       };
 
       final NetworkResponse response = await NetworkCall.postRequest(

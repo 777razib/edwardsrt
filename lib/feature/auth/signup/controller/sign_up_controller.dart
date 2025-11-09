@@ -22,11 +22,10 @@ class SignUpApiController extends GetxController {
 
 
       Map<String, dynamic> mapBody = {
-        "first_name": accountTextEditingController.firstNameController.text.trim(),
-        "last_name": accountTextEditingController.lastNameController.text.trim(),
+        "firstName": accountTextEditingController.firstNameController.text.trim(),
+        "lastName": accountTextEditingController.lastNameController.text.trim(),
         "email": accountTextEditingController.emailController.text.trim(),
         "password": accountTextEditingController.passwordController.text.trim(),
-        "confirm_password": accountTextEditingController.confirmPasswordController.text.trim(),
         // Only send the FCM token to your backend
       };
 

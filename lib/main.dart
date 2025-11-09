@@ -1,6 +1,7 @@
+// lib/main.dart
+import 'package:edwardsrt/localization.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
-
+import 'package:get/get.dart';
 import 'feature/splash/splash_screen.dart';
 
 void main() {
@@ -10,16 +11,33 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This podcast widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(scaffoldBackgroundColor: Colors.white),
-      home: Scaffold(
+      title: 'Mind Cleanser',
+      theme: ThemeData(
+        scaffoldBackgroundColor: const Color(0xFFFFFFF3),
+        primaryColor: const Color(0xFF4A90E2),
+        fontFamily: 'Roboto',
+      ),
+
+      // Localization Setup
+      translations: AppLocalization(),
+      locale: const Locale('en'), // Default language
+      fallbackLocale: const Locale('en'), // Fallback language
+      supportedLocales: const [
+        Locale('en'),
+        Locale('ar'),
+        Locale('hi'),
+        Locale('zh'),
+        Locale('tr'),
+      ],
+
+      // Splash Screen as Home
+      home: const Scaffold(
         body: SplashScreen(),
       ),
     );
   }
 }
-
