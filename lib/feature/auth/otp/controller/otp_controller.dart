@@ -1,3 +1,4 @@
+import 'package:edwardsrt/core/services_class/shared_preferences_data_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/network_caller/network_config.dart';
@@ -8,27 +9,19 @@ class OtpController extends GetxController {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
-  //UserModel? userModel;
-
-  // final DataHelperController dataHelperController = Get.put(DataHelperController());
-  final AccountTextEditingController accountTextEditingController = Get.put(AccountTextEditingController());
-
-  /// ✅ Set email from previous step
-  /* void setEmail(String email) {
-    userModel = UserModel(email: email);
-  }*/
+  final AccountTextEditingController accountTextEditingController = Get.find();
 
   Future<bool> otpApiCallMethod() async {
     bool isSuccess = false;
-
     final email = accountTextEditingController.emailController.text.trim();
-    final otpControllers = accountTextEditingController.otpControllersList;
 
-    debugPrint("📧 Email: $email");
+    // Build OTP directly from list
+    final String otpText = accountTextEditingController.otpControllersList
+        .map((controller) => controller.text.trim())
+        .join('');
 
-    // Extract OTP as a concatenated string from the list of controllers
-    String otpText = otpControllers.map((controller) => controller.text.trim()).join('');
-    debugPrint("🔢 OTP: $otpText");
+    debugPrint("Email: $email");
+    debugPrint("OTP: '$otpText' (Length: ${otpText.length})");
 
     // Validation
     if (email.isEmpty) {
@@ -37,54 +30,48 @@ class OtpController extends GetxController {
       return false;
     }
 
-    if (otpText.isEmpty || otpText.length != otpControllers.length) {  // Assuming one digit per controller
-      Get.snackbar("Error", "Invalid OTP format");
+    if (otpText.isEmpty || otpText.length != 4 || !RegExp(r'^\d{4}$').hasMatch(otpText)) {
+      Get.snackbar("Error", "Please enter a valid 4-digit OTP");
       return false;
     }
 
     try {
       Map<String, dynamic> mapBody = {
         "email": email,
-        "otp": otpText,  // Send as string
+        "otp": int.parse(otpText),
       };
 
-      debugPrint("📤 Sending request to ${Urls.authFVerifyOtp}");
-      debugPrint("📦 Payload: $mapBody");
+      debugPrint("Sending request to ${Urls.authFVerifyOtp}");
+      debugPrint("Payload: $mapBody");
 
       final NetworkResponse response = await NetworkCall.postRequest(
         url: Urls.authFVerifyOtp,
         body: mapBody,
       );
 
-      debugPrint("📥 RESPONSE Status: ${response.statusCode}");
-      debugPrint("📥 RESPONSE Body: ${response.responseData}");
+      debugPrint("RESPONSE Status: ${response.statusCode}");
+      debugPrint("RESPONSE Body: ${response.responseData}");
 
       if (response.isSuccess) {
-        final data = response.responseData?['data'];
-
-       /* final token = response.responseData!["access_token"];
-        print("====$token");
-
-        final updatedUser = UserModel.fromJson(data);
-        await AuthController.setUserData(token, updatedUser);
-        await SharedPreferencesHelper.saveAccessToken(token);
-        await AuthController.getUserData();*/
 
         isSuccess = true;
         _errorMessage = null;
+        // TODO: Re-enable when AuthController is ready
+        // await SharedPreferencesHelper.saveAccessToken(token);
+         await AuthController.getUserData();
       } else {
         final detail = response.responseData?['detail'];
         if (detail is String) {
           _errorMessage = detail;
         } else if (detail is List) {
-          _errorMessage = detail.map((e) => e['msg'] as String).join('\n');
+          _errorMessage = detail.map((e) => e['msg'] as String? ?? '').join('\n');
         } else {
-          _errorMessage = "Unknown error";
+          _errorMessage = "Invalid OTP or email";
         }
       }
     } catch (e) {
       _errorMessage = "Something went wrong: $e";
-      debugPrint("❌ OTP Exception: $e");
+      debugPrint("OTP Exception: $e");
     }
 
     update();

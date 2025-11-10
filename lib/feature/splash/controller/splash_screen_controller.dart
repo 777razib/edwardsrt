@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter_easyloading/flutter_easyloading.dart'; // <-- Add this
 import 'package:get/get.dart';
 import '../../../core/services_class/shared_preferences_helper.dart';
-import '../../choose interest/screen/choose_interest_screen.dart';
+import '../../nav bar/screen/custom_bottom_nav_bar.dart';
 import '../../onboarding/view/onboarding.dart';
 
 class SplashScreenController extends GetxController {
@@ -18,7 +18,7 @@ class SplashScreenController extends GetxController {
 
     // 3. Navigation logic
     if (isLogin == true && token != null && token.isNotEmpty) {
-      Get.offAll(() => const ChooseInterestScreen());
+      Get.offAll(() => const CustomBottomNavBar());
     } else {
       // Either not logged in OR token expired/missing
       Get.offAll(() =>  OnboardingScreen());

@@ -17,9 +17,8 @@ class OtpScreen extends StatefulWidget {
 
 class _OtpScreenState extends State<OtpScreen> {
   final OtpController otpController = Get.put(OtpController());
-  ResetPasswordController resetPasswordController = Get.find<ResetPasswordController>();
-
-  final AccountTextEditingController accountTextEditingController = Get.find<AccountTextEditingController>();
+  final ResetPasswordController resetPasswordController = Get.find();
+  final AccountTextEditingController accountTextEditingController = Get.find();
 
   int _secondsRemaining = 60;
   late Timer _timer;
@@ -35,9 +34,11 @@ class _OtpScreenState extends State<OtpScreen> {
       if (_secondsRemaining == 0) {
         timer.cancel();
       } else {
-        setState(() {
-          _secondsRemaining--;
-        });
+        if (mounted) {
+          setState(() {
+            _secondsRemaining--;
+          });
+        }
       }
     });
   }
@@ -88,20 +89,20 @@ class _OtpScreenState extends State<OtpScreen> {
             const SizedBox(height: 10),
             RichText(
               textAlign: TextAlign.center,
-              text: const TextSpan(
-                style: TextStyle(color: Colors.grey, fontSize: 14),
+              text: TextSpan(
+                style: const TextStyle(color: Colors.grey, fontSize: 14),
                 children: [
-                  TextSpan(text: "We have just sent you 5 digit code via your\nemail "),
+                  const TextSpan(text: "We have just sent you 4 digit code via your\nemail "),
                   TextSpan(
-                    text: "example@gmail.com",
-                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+                    text: accountTextEditingController.emailController.text,
+                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 30),
 
-            // ✅ Use otpInputController (the actual field name)
+            // OTP Input Fields
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(AccountTextEditingController.otpLength, (index) {
@@ -109,13 +110,15 @@ class _OtpScreenState extends State<OtpScreen> {
                   width: 56,
                   height: 56,
                   child: TextField(
-                    // ✅ Use the operator instead of direct field access
                     controller: accountTextEditingController[index],
-                    focusNode: accountTextEditingController.focusNodes[index],
+                    focusNode: accountTextEditingController.focusNodes [index],
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(1),
+                    ],
                     maxLength: 1,
                     decoration: InputDecoration(
                       counterText: '',
@@ -129,13 +132,17 @@ class _OtpScreenState extends State<OtpScreen> {
                       ),
                       contentPadding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                    onChanged: (value) => _onChanged(value, index),
+                    onChanged: (value) {
+                      _onChanged(value, index);
+                    },
                   ),
                 );
               }),
             ),
 
             const SizedBox(height: 30),
+
+            // Confirm Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -152,7 +159,10 @@ class _OtpScreenState extends State<OtpScreen> {
                 ),
               ),
             ),
+
             const SizedBox(height: 20),
+
+            // Timer Text
             RichText(
               text: TextSpan(
                 style: const TextStyle(color: Colors.black, fontSize: 14),
@@ -165,22 +175,18 @@ class _OtpScreenState extends State<OtpScreen> {
                 ],
               ),
             ),
+
             const SizedBox(height: 12),
+
+            // Resend Code
             GestureDetector(
-              onTap: _secondsRemaining == 0
-                  ? () {
-                setState(() {
-                  _secondsRemaining = 60;
-                  startTimer();
-                });
-              }
-                  : null,
+              onTap: _secondsRemaining == 0 ? resendOtpApiCallMethod : null,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text("Didn't receive code? ", style: TextStyle(color: Colors.grey)),
                   GestureDetector(
-                    onTap: resendOtpApiCallMethod,
+                    onTap: _secondsRemaining == 0 ? resendOtpApiCallMethod : null,
                     child: Text(
                       'Resend Code',
                       style: TextStyle(
@@ -198,26 +204,41 @@ class _OtpScreenState extends State<OtpScreen> {
     );
   }
 
-  Future<void> apiCallButton() async{
-    Get.to(() => CreateNewPasswordScreen());
-/*
-    bool isSuccess=await otpController.otpApiCallMethod();
-  if(isSuccess){
-      // Get the complete OTP using the getOtpString method
-      final otp = accountTextEditingController.getOtpString();
-      print('Entered OTP: $otp');
-      Get.to(() => CreateNewPasswordScreen());
-  }*/
+  // Confirm Button Action
+  Future<void> apiCallButton() async {
+    final otp = accountTextEditingController.getOtpString();
 
+    debugPrint("OTP from getOtpString: '$otp'");
+
+    if (otp.length != 4 || !RegExp(r'^\d{4}$').hasMatch(otp)) {
+      Get.snackbar("Error", "Please enter a valid 4-digit OTP");
+      return;
+    }
+
+    bool isSuccess = await otpController.otpApiCallMethod();
+    if (isSuccess) {
+      Get.to(() => CreateNewPasswordScreen());
+    } else {
+      Get.snackbar("Error", otpController.errorMessage ?? "Invalid OTP");
+    }
   }
 
-  Future<void> resendOtpApiCallMethod()async {
-    bool isSuccess=await  resetPasswordController.resetPasswordApiCallMethod();
-    if(isSuccess) {
+  // Resend OTP
+  Future<void> resendOtpApiCallMethod() async {
+    if (_secondsRemaining != 0) {
+      Get.snackbar("Wait", "Please wait for the timer to finish");
+      return;
+    }
+
+    bool isSuccess = await resetPasswordController.resetPasswordApiCallMethod();
+    if (isSuccess) {
+      setState(() {
+        _secondsRemaining = 60;
+        startTimer();
+      });
       Get.snackbar("Success", "OTP sent successfully");
-     /// Get.to(() => OtpScreen());
-    }else {
-      Get.snackbar("Error", "Something went wrong");
+    } else {
+      Get.snackbar("Error", "Failed to resend OTP");
     }
   }
 }

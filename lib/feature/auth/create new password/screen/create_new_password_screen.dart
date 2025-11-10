@@ -166,7 +166,6 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
 
   Future<void> _apiCallMethod() async {
     bool isSuccess = await addNewPassword.addNewPasswordApiCallMethod();
-
     if (isSuccess) {
       _showSuccessDialog();
     } else {

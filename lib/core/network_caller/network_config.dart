@@ -30,7 +30,7 @@ class NetworkCall {
   static Future<String?> _getAuthHeader() async {
     final token = await SharedPreferencesHelper.getAccessToken();
     if (token != null && token.isNotEmpty) {
-      return 'Bearer $token';
+      return token;
     }
     return null;
   }
@@ -282,7 +282,7 @@ class NetworkCall {
     required String url,
     Map<String, String>? fields,
     File? imageFile,
-    String methodType = 'POST',
+    String methodType = 'PUT',
     String imageFieldName = 'profileImage', // ← এটা যোগ করুন
   }) async {
     try {

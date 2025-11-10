@@ -43,7 +43,7 @@ class EditProfileController extends GetxController {
 
     _originalFirstName = firstNameCtrl.text;
     _originalLastName = lastNameCtrl.text;
-    _originalImage = user.avatar ?? '';
+    _originalImage = user.profileImage ?? '';
   }
 
   Future<void> pickImage() async {

@@ -1,87 +1,56 @@
-// lib/feature/media/audio/controller/audio_summary_api_controller.dart
 import 'package:get/get.dart';
-import '../../../../core/network_caller/network_config.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter/material.dart';
+
 import '../../../../core/network_path/natwork_path.dart';
-import '../../../../core/services_class/shared_preferences_helper.dart';
-import '../model/audio_summay_model.dart'; // Adjust path if needed
 
+// Model for audio summary
+class AudioSummaryModel {
+  final int id;
+  final String title;
+  final String thumbnail;
+
+  AudioSummaryModel({
+    required this.id,
+    required this.title,
+    required this.thumbnail,
+  });
+
+  factory AudioSummaryModel.fromJson(Map<String, dynamic> json) {
+    return AudioSummaryModel(
+      id: json['id'] ?? 0,
+      title: json['title'] ?? '',
+      thumbnail: json['thumbnail'] ?? '',
+    );
+  }
+}
+
+// Controller to fetch audio summary
 class AudioSummaryApiController extends GetxController {
-  PodcastTranscriptModel? _podcastTranscriptModel;
-  PodcastTranscriptModel? get podcastTranscriptModel => _podcastTranscriptModel;
-
-  String? _errorMessage;
-  String? get errorMessage => _errorMessage;
-
   var isLoading = false.obs;
+  var errorMessage = Rx<String?>(null);
+  var audioSummary = Rx<AudioSummaryModel?>(null);
 
-  Future<bool> audioSummaryApiController(String audioUrl) async {
+  Future<void> fetchAudioSummary(int id) async {
     isLoading(true);
-    // Validate URL
-    if (audioUrl.isEmpty || !audioUrl.startsWith('http')) {
-      _errorMessage = 'Invalid or missing audio URL';
-      isLoading(false);
-      update();
-      return false;
-    }
-
-    isLoading(true);
-    _errorMessage = null;
-    _podcastTranscriptModel = null;
-    bool isSuccess = false;
+    errorMessage(null);
 
     try {
-     /* Map<String,dynamic> body={
-        "audio_url":audioUrl
-      };*/
-      // Use GET (your backend supports query params)
-      final response = await NetworkCall.postRequest(
-        url: Urls.audioSummary(audioUrl),
-      );
+      final response = await http.get(Uri.parse('${Urls.audioSummary}/$id')); // Corrected
 
-      print("🔗 Final URL: ${Urls.audioSummary(audioUrl)}");
-      print("📥 Raw Response: ${response.responseData}");
-
-      if (response.isSuccess && response.responseData != null) {
-        final data = response.responseData!;
-
-        dynamic summaryData;
-        if (data.containsKey('summary')) {
-          summaryData = data['summary']; // Could be String or Map
-        } else if (data is String) {
-          summaryData = data;
-        } else {
-          _errorMessage = 'No summary field in response';
-          update();
-          return false;
-        }
-
-        try {
-          _podcastTranscriptModel = PodcastTranscriptModel.fromJson(summaryData);
-
-          final summaryText = _podcastTranscriptModel?.summary ?? '';
-          if (summaryText.isNotEmpty) {
-            await SharedPreferencesHelper.saveAudioSummary(summaryText);
-            print("✅ Summary saved: ${summaryText.substring(0, summaryText.length.clamp(0, 100))}...");
-            isSuccess = true;
-          } else {
-            _errorMessage = 'Summary is empty';
-          }
-        } catch (parseError) {
-          _errorMessage = 'Failed to parse summary: $parseError';
-          print("❌ Parse Error: $parseError");
-        }
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        audioSummary.value = AudioSummaryModel.fromJson(data); // Assuming the response is the summary object
       } else {
-        _errorMessage = response.errorMessage ?? 'Server error ${response.statusCode}';
-        print("❌ API Error: ${_errorMessage}");
+        errorMessage.value = "Failed to load summary. Status: ${response.statusCode}";
+        debugPrint(errorMessage.value);
       }
     } catch (e) {
-      _errorMessage = 'Network Exception: $e';
-      print("❌ Exception: $e");
+      errorMessage.value = "An error occurred: $e";
+      debugPrint("Exception: $e");
     } finally {
       isLoading(false);
     }
-
-    update(); // Notify UI
-    return isSuccess;
   }
 }

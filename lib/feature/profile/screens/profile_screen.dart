@@ -101,9 +101,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Row(
         children: [
           ClipOval(
-            child: user.avatar != null
+            child: user.profileImage != null
                 ? Image.network(
-              user.avatar!,
+              user.profileImage!,
               width: 80,
               height: 80,
               fit: BoxFit.cover,

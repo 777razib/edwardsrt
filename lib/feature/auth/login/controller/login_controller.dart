@@ -31,9 +31,9 @@ class LoginApiRiderController extends GetxController {
       );
 
       if (response.isSuccess) {
-        final data = response.responseData!;
+        final data = response.responseData!["data"];
 
-        final String? token = data['access_token'];
+        final String? token = data['token'];
         if (token == null || token.isEmpty) {
           _errorMessage = 'Invalid token received';
           return false;
@@ -43,6 +43,7 @@ class LoginApiRiderController extends GetxController {
         await AuthController.saveAccessToken(token);
         await SharedPreferencesHelper.saveAccessToken(token);
         await SharedPreferencesHelper.saveUserEmail( userTextEditingController.emailController.text);
+        await AuthController.getUserData();
        // await SharedPreferencesHelper.saveUserId(data['data']['id']); // await AuthController.setUserData(token, userModel);
 
         _errorMessage = null;

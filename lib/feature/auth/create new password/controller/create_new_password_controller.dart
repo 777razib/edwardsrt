@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../../../core/network_caller/network_config.dart';
 import '../../../../core/network_path/natwork_path.dart';
 import '../../account text editing controller/account_text_editing_controller.dart';
@@ -59,7 +58,18 @@ class AddNewPassword extends GetxController {
 
       if (response.isSuccess) {
         _successMessage = response.responseData?['message'] ?? "Password reset successful.";
+        var data=response.responseData!['data'];
         isSuccess = true;
+        /*final String? token = data['token'];
+        if (token == null || token.isEmpty) {
+          _errorMessage = 'Invalid token received';
+          return false;
+        }*/
+
+       /* UserModel userModel =  UserModel.fromJson(data);
+        await AuthController.setUserData(token,userModel);
+        await SharedPreferencesHelper.saveAccessToken(token);
+        await AuthController.getUserData();*/
       } else {
         _errorMessage = response.responseData?['message'] ??
             response.responseData?['detail'] ??

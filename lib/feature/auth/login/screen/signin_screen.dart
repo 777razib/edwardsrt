@@ -27,7 +27,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final FocusNode emailFocusNode = FocusNode();
   final FocusNode passwordFocusNode = FocusNode();
 
- /* @override
+ @override
   void dispose() {
     // Clear text when leaving screen (optional)
     _acctCtrl.clearAll();
@@ -36,7 +36,7 @@ class _SignInScreenState extends State<SignInScreen> {
     emailFocusNode.dispose();
     passwordFocusNode.dispose();
     super.dispose();
-  }*/
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -216,10 +216,10 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Future<void> _apiCallButton() async {
-    Get.offAll(() => const CustomBottomNavBar()); // Clears navigation stack
-    /*final isSuccess = await _loginCtrl.loginApiRiderMethod();
+    //Get.offAll(() => const CustomBottomNavBar()); // Clears navigation stack
+    final isSuccess = await _loginCtrl.loginApiRiderMethod();
     if (isSuccess) {
-      Get.offAll(() => const ChooseInterestScreen()); // Clears navigation stack
+      Get.offAll(() => const CustomBottomNavBar()); // Clears navigation stack
     } else {
       Get.snackbar(
         "Login Failed",
@@ -227,6 +227,6 @@ class _SignInScreenState extends State<SignInScreen> {
         backgroundColor: Colors.red.withOpacity(0.1),
         colorText: Colors.red,
       );
-    }*/
+    }
   }
 }

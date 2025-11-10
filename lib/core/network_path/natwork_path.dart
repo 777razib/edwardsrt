@@ -1,49 +1,26 @@
-// lib/core/network_path/network_path.dart
-
 class Urls {
-  static const String _baseUrl = 'http://10.0.10.66:12021/api/v1';
+  static const String baseUrl = 'http://198.199.76.220:12021/api/v1'; // Re-check this IP and port
 
-  // Keep your auth URLs
-  static const String login = '$_baseUrl/auth/login';
-  static const String authSignUp = '$_baseUrl/auth/register';
-  static const String authForgetSendOtp = '$_baseUrl/auth/forgot-password';
-  static const String authFVerifyOtp = '$_baseUrl/auth/verify-otp';
-  static const String authForgetResetPassword = '$_baseUrl/auth/reset-password';
-  static const String getUserDataUrl = '$_baseUrl/user/me';
-  static const String editUserDataUrl = '$_baseUrl/user/me/edit';
-  static const String deleteUserDataUrl = '$_baseUrl/user/delete-my-profile';
-  static   String singleAudio(String id) => '$_baseUrl/episode/$id?show_transcript=1';
-  static String searchingText(String url,String text){
-    final encoded=Uri.encodeComponent(url);
-    return '$_baseUrl/guide-any-topic?audio_url=$encoded&topic=$text';
-  }
-// network_path.dart
-  static String audioSummary(String audioUrl) {
-    final encoded = Uri.encodeComponent(audioUrl);
-    return "$_baseUrl/episode/transcribe?audio_url=$encoded";
-  }
+  // Auth URLs
+  static const String login = '$baseUrl/auth/login';
+  static const String authSignUp = '$baseUrl/auth/signup';
+  static const String authForgetSendOtp = '$baseUrl/auth/send-otp';
+  static const String authFVerifyOtp = '$baseUrl/auth/verify-otp';
+  static const String authForgetResetPassword = '$baseUrl/auth/reset-password';
 
+  // Profile URLs
+  static const String getUserDataUrl = '$baseUrl/users/profile';
+  static const String editUserDataUrl = '$baseUrl/users/update-profile';
+  static const String logout = '$baseUrl/profile/logout';
+  static const String deleteUserDataUrl = '$baseUrl/profile';
 
-  // FIXED: Direct to ListenNotes
-  static String chooseInterest({
-    required String interest,
-    int page = 1,
-    int pageSize = 10,
-  }) {
-    final int offset = (page - 1) * pageSize;
-    final String query = Uri.encodeComponent(interest.trim());
+  // Treatments URLs
+  static const String treatmentsAll = '$baseUrl/treatments/all';
+  static const String treatmentsTopPlayList = '$baseUrl/treatments/top';
 
-    return '$_baseUrl/podcasts'
-        '?q=$query'
-        '&type=episode'
-        '&language=English'
-        '&len_min=5'      // ← Real episodes
-        '&len_max=120'
-        '&offset=$offset'
-        '&limit=$pageSize';
-  }
-  static String getCalendar(String date, String locationUuid) =>
-      '$_baseUrl/calendar?date=$date&pickup_location_uuid=$locationUuid';
-
-  static const String googleApiKey = "AIzaSyC7AoMhe2ZP3iHflCVr6a3VeL0ju0bzYVE";
+  // Other URLs
+  static const String chooseInterest = '$baseUrl/interests'; // Corrected endpoint
+  static const String singleAudio = '$baseUrl/audios';      // Corrected endpoint
+  static const String audioSummary = '$baseUrl/audio/summary';
+  static const String searchingText = '$baseUrl/search';
 }

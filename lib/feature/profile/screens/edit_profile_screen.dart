@@ -24,7 +24,7 @@ class EditProfilePage extends StatelessWidget {
             // Profile Image
             Obx(() {
               final path = controller.newProfileImagePath.value;
-              final url = controller.profileCtrl.userProfile.value.avatar;
+              final url = controller.profileCtrl.userProfile.value.profileImage;
 
               return Stack(
                 alignment: Alignment.bottomRight,
