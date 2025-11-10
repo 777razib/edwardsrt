@@ -1,190 +1,116 @@
-/*
-// lib/feature/choose_interest/controller/choose_interest_api_controller.dart
+import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:naomithedose/core/network_caller/network_config.dart';
-import 'package:naomithedose/core/services_class/shared_preferences_helper.dart';
-import '../../../core/network_path/natwork_path.dart';
-import '../model/choose_interest_response_model.dart';
-
-class ChooseInterestApiController extends GetxController {
-  final RxList<ChooseInterestItem> episodes = <ChooseInterestItem>[].obs;
-  final RxBool isLoading = false.obs;
-  final RxBool hasMore = true.obs;
-  final RxString errorMessage = ''.obs;
-  final RxInt currentPage = 1.obs;
-  final int pageSize = 10;
-
-  String? _currentQuery;
-
-  Future<void> chooseInterestApiMethod({
-    required String? interest,
-    bool loadMore = false,
-  }) async {
-    if (interest != null && interest != _currentQuery) {
-      _currentQuery = interest;
-      currentPage.value = 1;
-      episodes.clear();
-      hasMore.value = true;
-    }
-
-    if (interest == null || interest.trim().isEmpty) {
-      errorMessage.value = 'Please provide a guide term';
-      return;
-    }
-
-    if (isLoading.value && !loadMore) return;
-
-    try {
-      if (!loadMore) {
-        isLoading.value = true;
-        errorMessage.value = '';
-      }
-
-      final String url = Urls.chooseInterest(
-        interest: _currentQuery!,
-        page: currentPage.value,
-        pageSize: pageSize,
-      );
-
-      final NetworkResponse response = await NetworkCall.getRequest(url: url);
-
-      if (response.isSuccess) {
-        await SharedPreferencesHelper.getAccessToken();
-        final data = response.responseData!;
-        final model = ChooseInterestResponseModel.fromJson(data);
-        final List<ChooseInterestItem> newEpisodes = model.results ?? [];
-
-        if (loadMore) {
-          episodes.addAll(newEpisodes);
-        } else {
-          episodes.assignAll(newEpisodes);
-        }
-
-        // FIXED: Use camelCase field
-        hasMore.value = model.nextOffset != null && model.nextOffset! > 0;
-      } else {
-        errorMessage.value = response.errorMessage ?? 'Failed to load episodes';
-        hasMore.value = false;
-      }
-    } catch (e) {
-      errorMessage.value = 'Error: $e';
-      hasMore.value = false;
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  void loadNextPage() {
-    if (hasMore.value && !isLoading.value) {
-      currentPage.value++;
-      chooseInterestApiMethod(interest: _currentQuery, loadMore: true);
-    }
-  }
-
-  Future<void> refresh({String? interest}) async {
-    currentPage.value = 1;
-    hasMore.value = true;
-    await chooseInterestApiMethod(interest: interest ?? _currentQuery);
-  }
-
-  void retry() {
-    errorMessage.value = '';
-    chooseInterestApiMethod(interest: _currentQuery);
-  }
-}*/
-// lib/feature/choose_interest/controller/choose_interest_api_controller.dart
-import 'package:edwardsrt/core/network_caller/network_config.dart';
-import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import '../../../core/network_path/natwork_path.dart';
 import '../../../core/services_class/shared_preferences_helper.dart';
-import '../model/choose_interest_response_model.dart';
+import '../../nav bar/screen/custom_bottom_nav_bar.dart';
 
 class ChooseInterestApiController extends GetxController {
-  final RxList<ChooseInterestItem> episodes = <ChooseInterestItem>[].obs;
-  final RxBool isLoading = false.obs;
-  final RxBool hasMore = true.obs;
-  final RxString errorMessage = ''.obs;
-  final RxInt currentPage = 1.obs;
-  final int pageSize = 10;
+  final interestList = <Map<String, dynamic>>[].obs;
+  final selectedInterests = <int>[].obs;
 
-  String? _currentQuery;
+  final isLoading = false.obs;
+  String? _errorMessage;
+  String? get errorMessage => _errorMessage;
 
-  Future<void> chooseInterestApiMethod({
-    required String? interest,
-    bool loadMore = false,
-  }) async {
-    // যদি নতুন সার্চ বা ক্যাটাগরি, অথবা loadMore না হয় → পুরোনো ডেটা ক্লিয়ার
-    if (!loadMore) {
-      final bool isNewQuery = interest != null && interest != _currentQuery;
-      if (isNewQuery || episodes.isNotEmpty) {
-        _currentQuery = interest;
-        currentPage.value = 1;
-        episodes.clear();
-        hasMore.value = true;
-        errorMessage.value = '';
-      }
+  @override
+  void onInit() {
+    super.onInit();
+    fetchInterests();
+  }
+
+  void toggleInterest(int id) {
+    if (selectedInterests.contains(id)) {
+      selectedInterests.remove(id);
+    } else {
+      selectedInterests.add(id);
     }
+    debugPrint("Selected IDs: $selectedInterests");
+  }
 
-    if (interest == null || interest.trim().isEmpty) {
-      errorMessage.value = 'Please provide a guide term';
-      isLoading.value = false;
-      return;
-    }
-
-    if (isLoading.value) return;
-
+  Future<void> fetchInterests() async {
+    isLoading.value = true;
     try {
-      isLoading.value = true;
+      final response = await http.get(Uri.parse(Urls.chooseInterest));
 
-      final String url = Urls.chooseInterest(
-        interest: _currentQuery!,
-        page: currentPage.value,
-        pageSize: pageSize,
-      );
-
-      final NetworkResponse response = await NetworkCall.getRequest(url: url);
-
-      if (response.isSuccess) {
-        await SharedPreferencesHelper.getAccessToken();
-        final data = response.responseData!;
-        final model = ChooseInterestResponseModel.fromJson(data);
-        final List<ChooseInterestItem> newEpisodes = model.results ?? [];
-
-        if (loadMore) {
-          episodes.addAll(newEpisodes);
-        } else {
-          episodes.assignAll(newEpisodes);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['results'] != null) {
+          final List<Map<String, dynamic>> interests = (data['results'] as List)
+              .map((item) => {
+            'id': item['id'] as int,
+            'title': item['title'] as String,
+            'thumbnail': item['thumbnail'] as String? ?? '',
+          })
+              .toList();
+          interestList.value = interests;
+          debugPrint("Fetched ${interestList.length} interests.");
         }
-
-        // nextOffset থাকলে পেজিনেশন চালু
-        hasMore.value = model.nextOffset != null && model.nextOffset! > currentPage.value * pageSize;
       } else {
-        errorMessage.value = response.errorMessage ?? 'Failed to load episodes';
-        hasMore.value = false;
+        _errorMessage = "Failed to load interests: ${response.statusCode}";
+        debugPrint(_errorMessage);
       }
     } catch (e) {
-      errorMessage.value = 'Error: $e';
-      hasMore.value = false;
+      _errorMessage = "Something went wrong: $e";
+      debugPrint(_errorMessage);
     } finally {
       isLoading.value = false;
     }
   }
 
-  void loadNextPage() {
-    if (hasMore.value && !isLoading.value && _currentQuery != null) {
-      currentPage.value++;
-      chooseInterestApiMethod(interest: _currentQuery, loadMore: true);
+  Future<bool> saveInterests() async {
+    if (selectedInterests.isEmpty) {
+      Get.snackbar("No Selection", "Please select at least one interest.");
+      return false;
     }
-  }
 
-  Future<void> refresh({String? interest}) async {
-    currentPage.value = 1;
-    hasMore.value = true;
-    await chooseInterestApiMethod(interest: interest ?? _currentQuery, loadMore: false);
-  }
+    isLoading.value = true;
+    _errorMessage = null;
 
-  void retry() {
-    errorMessage.value = '';
-    chooseInterestApiMethod(interest: _currentQuery, loadMore: false);
+    final String? token = await SharedPreferencesHelper.getAccessToken();
+    if (token == null) {
+      _errorMessage = "Auth token not found.";
+      isLoading.value = false;
+      return false;
+    }
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    final body = json.encode({
+      'interests': selectedInterests,
+    });
+
+    try {
+      debugPrint("Sending selected interests to the server...");
+      final response = await http.post(
+        Uri.parse(Urls.chooseInterest),
+        headers: headers,
+        body: body,
+      );
+
+      debugPrint("Response Status: ${response.statusCode}");
+      debugPrint("Response Body: ${response.body}");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Get.snackbar("Success", "Interests saved successfully!");
+        Get.offAll(() => const CustomBottomNavBar());
+        return true;
+      } else {
+        final data = json.decode(response.body);
+        _errorMessage = data['detail'] as String? ?? "Failed to save interests.";
+        Get.snackbar("Error", _errorMessage!);
+        return false;
+      }
+    } catch (e) {
+      _errorMessage = "An unexpected error occurred: $e";
+      Get.snackbar("Error", _errorMessage!);
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

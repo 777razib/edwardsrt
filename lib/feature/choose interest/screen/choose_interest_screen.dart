@@ -1,3 +1,4 @@
+/*
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -128,7 +129,8 @@ class _ChooseInterestScreenState extends State<ChooseInterestScreen> {
           : null,
     );
   }
- /* Future<void> _apiCallButton() async {
+ */
+/* Future<void> _apiCallButton() async {
     // Get selected topic names
     final List<String> selectedNames = interests
         .where((e) => selectedIds.contains(e['id']))
@@ -171,10 +173,12 @@ class _ChooseInterestScreenState extends State<ChooseInterestScreen> {
       // Hide loading
       if (Get.isDialogOpen == true) Get.back();
     }
-  }*/
+  }*//*
+
   // screen/choose_interest_screen.dart (fixed _apiCallButton)
   Future<void> _apiCallButton() async {
     Get.offAll(() => const CustomBottomNavBar()); // ← NOW WORKS!
+*/
 /*
     final selectedNames = interests
         .where((e) => selectedIds.contains(e['id']))
@@ -203,6 +207,7 @@ class _ChooseInterestScreenState extends State<ChooseInterestScreen> {
       Get.snackbar("Error", "Check API key or internet");
     } finally {
       if (Get.isDialogOpen == true) Get.back();
-    }*/
+    }*//*
+
   }
-}
+}*/
