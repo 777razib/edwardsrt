@@ -17,6 +17,7 @@ class Urls {
   // Treatments URLs
   static const String treatmentsAll = '$baseUrl/treatments/all';
   static const String treatmentsTopPlayList = '$baseUrl/treatments/top';
+  static  String treatmentsSingleId(String id) => '$baseUrl/treatments/single/$id';
 
   // Other URLs
   static const String chooseInterest = '$baseUrl/interests'; // Corrected endpoint

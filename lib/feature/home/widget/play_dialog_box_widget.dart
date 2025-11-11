@@ -1,62 +1,49 @@
-// lib/dialog/play_dialog_box_widget.dart
 import 'package:edwardsrt/core/app_colors.dart';
 import 'package:edwardsrt/core/style/text_style.dart';
 import 'package:edwardsrt/feature/home/model/session_model.dart';
+import 'package:edwardsrt/feature/home/model/top_play_list_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../audio/screen/audio_screen.dart';
 
+/// Controller for managing selected session
 class SessionController extends GetxController {
   final RxInt selectedIndex = (-1).obs;
 
   void select(int index) => selectedIndex.value = index;
+  void reset() => selectedIndex.value = -1;
 }
 
+/// Main Dialog Widget
 class PlayDialogBoxWidget extends StatelessWidget {
-  PlayDialogBoxWidget({super.key});
+  final TopPlayListModel treatment;
 
-  final List<Session> sessions = [
-    Session(
-      image: 'assets/images/mehreen.jpg',
-      title: 'Mehreen',
-      subtitle: 'Tumi Acho Bole',
-      duration: const Duration(minutes: 3),
-      audioPath: 'assets/audio/MEHREEN  TUMI ACHO BOLE (তম আছ বল)  OFFICIAL VDO.mp3',
-    ),
-    Session(
-      image: 'assets/images/session_2.png',
-      title: 'Session 2: Morning Boost',
-      subtitle: '5 min • Energizing',
-      duration: const Duration(minutes: 5),
-      audioPath: 'assets/audio/session_2.mp3',
-    ),
-    Session(
-      image: 'assets/images/session_3.png',
-      title: 'Session 3: Sleep Prep',
-      subtitle: '15 min • Calming',
-      duration: const Duration(minutes: 15),
-      audioPath: 'assets/audio/session_3.mp3',
-    ),
-    Session(
-      image: 'assets/images/session_4.png',
-      title: 'Session 4: Focus Flow',
-      subtitle: '8 min • Productive',
-      duration: const Duration(minutes: 8),
-      audioPath: 'assets/audio/session_4.mp3',
-    ),
-    Session(
-      image: 'assets/images/session_5.png',
-      title: 'Session 5: Stress Relief',
-      subtitle: '12 min • Soothing',
-      duration: const Duration(minutes: 12),
-      audioPath: 'assets/audio/session_5.mp3',
-    ),
-  ];
+  PlayDialogBoxWidget({super.key, required this.treatment});
+
+  // Use unique tag to avoid conflict in multiple dialogs
+  late final String _controllerTag = 'session_${treatment.id}';
+  late final SessionController ctrl;
 
   @override
   Widget build(BuildContext context) {
-    final ctrl = Get.put(SessionController());
+    // Initialize controller with unique tag
+    ctrl = Get.put(SessionController(), tag: _controllerTag);
+
+    // Convert howToStart → Session list
+    final List<Session> sessions = treatment.howToStart.map((howTo) {
+      return Session(
+        image: howTo.image,
+        title: howTo.title,
+        subtitle: howTo.subtitle,
+        duration: const Duration(minutes: 5), // Default or enhance later
+        audioPath: treatment.file, // Same audio for all steps
+      );
+    }).toList();
+
+    // Clean up controller when dialog closes
+    ever(ctrl.selectedIndex, (_) {});
+    Get.find<SessionController>(tag: _controllerTag).onClose();
 
     return Container(
       width: 304.6,
@@ -72,7 +59,17 @@ class PlayDialogBoxWidget extends StatelessWidget {
           // ---------- Session List ----------
           SizedBox(
             height: 240,
-            child: ListView.separated(
+            child: sessions.isEmpty
+                ? Center(
+              child: Text(
+                "No sessions available",
+                style: globalTextStyle(
+                  fontSize: 14,
+                  color: AppColors.blackColor.withOpacity(0.6),
+                ),
+              ),
+            )
+                : ListView.separated(
               shrinkWrap: true,
               physics: const BouncingScrollPhysics(),
               itemCount: sessions.length,
@@ -103,8 +100,10 @@ class PlayDialogBoxWidget extends StatelessWidget {
                   text: 'Note: ',
                   style: globalTextStyle(fontWeight: FontWeight.w600),
                 ),
-                const TextSpan(
-                  text: 'You may feel slightly tired after the session — rest for a few minutes if needed.',
+                TextSpan(
+                  text: treatment.afterText.isNotEmpty
+                      ? treatment.afterText
+                      : 'You may feel slightly tired after the session — rest for a few minutes if needed.',
                 ),
               ],
             ),
@@ -114,20 +113,22 @@ class PlayDialogBoxWidget extends StatelessWidget {
 
           // ---------- Start Button ----------
           Obx(() {
-            final canStart = ctrl.selectedIndex.value != -1;
+            final canStart = ctrl.selectedIndex.value != -1 && sessions.isNotEmpty;
             return GestureDetector(
               onTap: canStart
                   ? () {
-                final selected = sessions[ctrl.selectedIndex.value];
+                final selectedSession = sessions[ctrl.selectedIndex.value];
                 Get.back(); // Close dialog
-                Get.to(() => AudioScreen(session: selected));
+                Get.to(() => AudioScreen(id: "${_controllerTag}",));
               }
                   : null,
               child: Container(
                 width: double.infinity,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: canStart ? AppColors.primary : AppColors.primary.withOpacity(0.4),
+                  color: canStart
+                      ? AppColors.primary
+                      : AppColors.primary.withOpacity(0.4),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 alignment: Alignment.center,
@@ -148,7 +149,7 @@ class PlayDialogBoxWidget extends StatelessWidget {
   }
 }
 
-
+/// Reusable Session Item Widget
 class NewWidget extends StatelessWidget {
   const NewWidget({
     super.key,
@@ -183,13 +184,26 @@ class NewWidget extends StatelessWidget {
               child: SizedBox(
                 width: 48,
                 height: 48,
-                child: Image.asset(
+                child: Image.network(
                   session.image,
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => Container(
                     color: Colors.grey[200],
-                    child: const Icon(Icons.music_note, color: Colors.grey),
+                    child: const Icon(Icons.image_not_supported, color: Colors.grey),
                   ),
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      color: Colors.grey[200],
+                      child: const Center(
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),

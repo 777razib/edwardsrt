@@ -1,3 +1,4 @@
+/*
 // lib/features/events/controllers/events_controller.dart
 import 'package:get/get.dart';
 
@@ -77,4 +78,4 @@ void registerForEvent(String eventId) {
     events[eventIndex] = updatedEvent;
   }
 }
-}
+}*/

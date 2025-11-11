@@ -1,5 +1,6 @@
 // lib/feature/profile/controllers/profile_controller.dart
 import 'dart:io';
+import 'package:edwardsrt/core/services_class/shared_preferences_data_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/Get.dart';
 import '../../../core/network_caller/network_config.dart';
@@ -16,7 +17,7 @@ class ProfileApiController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // getProfile(); // ← API কল হবে না
+    getProfile();
   }
 
   Future<void> getProfile() async {
@@ -38,31 +39,36 @@ class ProfileApiController extends GetxController {
     }
   }
 
+  // lib/feature/profile/controllers/profile_controller.dart
+
   Future<bool> editProfile({
     required String firstName,
     required String lastName,
     String? profileImagePath,
-  }) async {
+   }) async {
     isLoading.value = true;
     try {
       final Map<String, String> fields = {
-        'first_name': firstName,
-        'last_name': lastName,
+        'firstName': firstName,
+        'lastName': lastName,
       };
 
+      final File? imageFile = profileImagePath != null ? File(profileImagePath) : null;
+
       final response = await NetworkCall.multipartRequest(
-        url: Urls.editUserDataUrl,
+        url: Urls.editUserDataUrl,     // ← /profile
         fields: fields,
-        imageFile: profileImagePath != null ? File(profileImagePath) : null,
-        imageFieldName: 'image', // ← API অনুযায়ী ফিল্ড নাম
+        imageFile: imageFile,            // ← imageFile
+        methodType: 'PUT',               // ← PUT
+        imageFieldName: 'image',         // ← image
       );
 
       if (response.isSuccess) {
-        final updatedData = response.responseData?['data'] ?? response.responseData ?? {};
+        final updatedData = response.responseData?['data'] ?? {};
         if (updatedData.isNotEmpty) {
           userProfile.value = UserModel.fromJson(updatedData);
         } else {
-          await getProfile(); // ফলব্যাক
+          await getProfile();
         }
         Get.snackbar('Success', 'Profile updated', backgroundColor: Colors.green, colorText: Colors.white);
         return true;
@@ -82,17 +88,14 @@ class ProfileApiController extends GetxController {
   Future<bool> logout() async {
     isLoading.value = true;
     try {
-      await Future.delayed(const Duration(milliseconds: 500)); // UI delay
+      await Future.delayed(const Duration(milliseconds: 500));
       await SharedPreferencesHelper.clearAccessToken();
-
-      // শেষে offAll — কোনো snackbar/dialog থাকবে না
       Get.offAll(() => const SignInScreen());
       return true;
     } catch (e) {
-      // এখানে snackbar দেখাবে না — UI ইতিমধ্যে চলে গেছে
       return false;
     } finally {
-      isLoading.value = false; // এটা চলবে না, কিন্তু রাখা ভালো
+      isLoading.value = false;
     }
   }
 
@@ -107,7 +110,7 @@ class ProfileApiController extends GetxController {
         return true;
       } else {
         errorMessage.value = response.errorMessage ?? 'Delete failed';
-        if (response.statusCode == 401) Get.offAll(() => const SignInScreen());;
+        if (response.statusCode == 401) Get.offAll(() => const SignInScreen());
         return false;
       }
     } catch (e) {
