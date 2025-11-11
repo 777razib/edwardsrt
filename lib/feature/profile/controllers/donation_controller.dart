@@ -1,3 +1,4 @@
+/*
 import 'package:get/get.dart';
 
 class DonationController extends GetxController {
@@ -30,4 +31,4 @@ class DonationController extends GetxController {
     //   return;
     // }
   }
-}
+}*/

@@ -1,4 +1,3 @@
-// lib/feature/profile/ui/profile_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
@@ -48,7 +47,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               if (controller.isLoading.value) return _buildShimmer();
 
-              return _buildProfileCard(user, fullName, controller); // ← controller পাস
+              return _buildProfileCard(user, fullName, controller);
             }),
 
             const SizedBox(height: 24),
@@ -189,7 +188,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }),
       _MenuItem('About Us'.tr, Icons.info_outline, () => Get.to(() => const AboutUsWidget())),
       _MenuItem('Privacy Policy'.tr, Icons.privacy_tip_outlined, () => Get.to(() => const PrivacyPolicyWidget())),
-      _MenuItem('Change Language'.tr, Icons.language, () => _showLanguageDialog()),
+      _MenuItem('Change Language'.tr, Icons.language, () => _showLanguageDialog(context)),
     ];
 
     final accountItems = [
@@ -198,6 +197,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ];
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildMenuCard("Personal Info".tr, personalItems),
         const SizedBox(height: 16),
@@ -251,27 +251,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showLanguageDialog() {
-    Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('Change Language'.tr),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildLanguageOption('English', const Locale('en')),
-              _buildLanguageOption('Arabic', const Locale('ar')),
-              _buildLanguageOption('Hindi', const Locale('hi')),
-              _buildLanguageOption('Chinese', const Locale('zh')),
-              _buildLanguageOption('Turkish', const Locale('tr')),
-            ],
+  void _showLanguageDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) { // Use the context from the builder
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text('Change Language'.tr),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildLanguageOption('English', const Locale('en')),
+                _buildLanguageOption('Arabic', const Locale('ar')),
+                _buildLanguageOption('Hindi', const Locale('hi')),
+                _buildLanguageOption('Chinese', const Locale('zh')),
+                _buildLanguageOption('Turkish', const Locale('tr')),
+              ],
+            ),
           ),
-        ),
-        actions: [
-          TextButton(onPressed: () => Get.back(), child: Text('Cancel'.tr)),
-        ],
-      ),
+          actions: [
+            TextButton(onPressed: () => Get.back(), child: Text('Cancel'.tr)),
+          ],
+        );
+      },
     );
   }
 

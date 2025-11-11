@@ -146,7 +146,7 @@ class SessionGuideWidget extends StatelessWidget {
                   ? () {
                 final selected = sessions[ctrl.selectedIndex.value];
                 Get.back(); // Close dialog
-                Get.to(() => AudioScreen(session: selected));
+                Get.to(() => AudioScreen(id: "",));
               }
                   : null,
               child: Container(

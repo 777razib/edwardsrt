@@ -1,18 +1,21 @@
-import 'dart:async';
+// lib/feature/audio/screen/audio_screen.dart
 
+import 'dart:async';
 import 'package:edwardsrt/feature/home/model/session_model.dart';
 import 'package:flutter/material.dart';
+import 'package:get/Get.dart';
 import 'package:just_audio/just_audio.dart';
+import '../controller/single_audio_api_controller.dart';
 import '../widget/audio_app_bar_widget.dart';
 import '../widget/audio_winer_widger.dart';
 import '../widget/custom_liner_progress_indicator_widget.dart';
 
 class AudioScreen extends StatefulWidget {
-  final Session session;
+  final String id;
 
   const AudioScreen({
     super.key,
-    required this.session,
+    required this.id,
   });
 
   @override
@@ -20,31 +23,32 @@ class AudioScreen extends StatefulWidget {
 }
 
 class _AudioScreenState extends State<AudioScreen> {
-  late AudioPlayer _audioPlayer;
+  late final AudioPlayer _audioPlayer;
+  final SingleAudioApiController controller = Get.put(SingleAudioApiController());
 
   @override
   void initState() {
     super.initState();
     _audioPlayer = AudioPlayer();
-    _initAudio();
+    _loadAudio();
   }
 
-  Future<void> _initAudio() async {
+  Future<void> _loadAudio() async {
     try {
-      // When the audio is loaded, the duration will be available.
-      await _audioPlayer.setAsset(widget.session.audioPath);
-      _audioPlayer.play();
+      await controller.singleAudioApiMethod(widget.id);
+      if (controller.topPlayList.isNotEmpty && mounted) {
+        final audioUrl = controller.topPlayList[0].file;
+        await _audioPlayer.setUrl(audioUrl);
+        _audioPlayer.play();
+      }
     } catch (e) {
-      debugPrint("Error playing audio: $e");
+      debugPrint("Audio Load Error: $e");
+      if (mounted) Get.snackbar("Error", "Failed to load audio.");
     }
   }
 
   void _handlePlayPause() {
-    if (_audioPlayer.playing) {
-      _audioPlayer.pause();
-    } else {
-      _audioPlayer.play();
-    }
+    _audioPlayer.playing ? _audioPlayer.pause() : _audioPlayer.play();
   }
 
   void _handleSeek(Duration position) {
@@ -61,89 +65,133 @@ class _AudioScreenState extends State<AudioScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(
-            "assets/images/21. Home - V2-3.png",
-            width: double.infinity,
-            height: double.infinity,
-            fit: BoxFit.cover,
-          ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                child: AudioAppBarWidget(
-                  title: widget.session.title,
-                  onBackPressed: () {
-                    _audioPlayer.stop();
-                    Navigator.pop(context);
-                  },
+      body: Obx(() {
+        // Loading
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        // Error
+        if (controller.errorMessage.isNotEmpty) {
+          return Center(
+            child: Text(
+              controller.errorMessage.value,
+              style: const TextStyle(color: Colors.white),
+            ),
+          );
+        }
+
+        // Empty
+        if (controller.topPlayList.isEmpty) {
+          return const Center(
+            child: Text(
+              "Audio not found.",
+              style: TextStyle(color: Colors.white),
+            ),
+          );
+        }
+
+        final audioItem = controller.topPlayList[0];
+
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            // Background
+            Image.asset(
+              "assets/images/21. Home - V2-3.png",
+              fit: BoxFit.cover,
+            ),
+
+            // App Bar
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  child: AudioAppBarWidget(
+                    title: audioItem.title,
+                    onBackPressed: () {
+                      _audioPlayer.stop();
+                      Get.back();
+                    },
+                  ),
                 ),
               ),
             ),
-          ),
-          Center(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(24),
-              child: Image.asset(
-                widget.session.image,
-                width: 180,
-                height: 180,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+
+            // Thumbnail
+            Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Image.network(
+                  audioItem.thumbnail,
                   width: 180,
                   height: 180,
-                  color: Colors.grey[300],
-                  child: const Icon(Icons.music_note, size: 60, color: Colors.grey),
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    width: 180,
+                    height: 180,
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.music_note, size: 60),
+                  ),
                 ),
               ),
             ),
-          ),
-          Positioned(
-            bottom: 40,
-            left: 20,
-            right: 20,
-            child: StreamBuilder<PlayerState>(
-              stream: _audioPlayer.playerStateStream,
-              builder: (context, snapshot) {
-                final playerState = snapshot.data;
-                final isPlaying = playerState?.playing ?? false;
-                final processingState = playerState?.processingState;
 
-                if (processingState == ProcessingState.completed) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                     Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (_) => AudioWinerWidget(session: widget.session),
-                        ),
+            // Progress + Controls
+            Positioned(
+              bottom: 40,
+              left: 20,
+              right: 20,
+              child: StreamBuilder<PlayerState>(
+                stream: _audioPlayer.playerStateStream,
+                builder: (context, snapshot) {
+                  final playerState = snapshot.data;
+                  final isPlaying = playerState?.playing ?? false;
+                  final processingState = playerState?.processingState;
+
+                  // On Complete → Go to Winner
+                  if (processingState == ProcessingState.completed) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (!mounted) return;
+
+                      final session = Session(
+                        image: audioItem.thumbnail,
+                        title: audioItem.title,
+                        subtitle: "Your session is complete. Well done!",
+                        duration: _audioPlayer.duration ?? Duration.zero,
+                        audioPath: audioItem.file,
                       );
-                  });
-                }
 
-                return StreamBuilder<Duration>(
-                  stream: _audioPlayer.positionStream,
-                  builder: (context, snapshot) {
-                    final position = snapshot.data ?? Duration.zero;
-                    final duration = _audioPlayer.duration ?? widget.session.duration;
-                    return CustomLinerProgressIndicatorWidget(
-                      startTime: position,
-                      endTime: duration,
-                      isPlaying: isPlaying,
-                      onPlayPause: _handlePlayPause,
-                      onSeek: _handleSeek,
-                    );
-                  },
-                );
-              },
+                      Get.off(() => AudioWinerWidget(session: session));
+                    });
+                  }
+
+                  return StreamBuilder<Duration>(
+                    stream: _audioPlayer.positionStream,
+                    builder: (context, snapshot) {
+                      final position = snapshot.data ?? Duration.zero;
+
+                      // Use player duration, NOT API
+                      final duration = _audioPlayer.duration ?? const Duration(seconds: 30);
+
+                      return CustomLinerProgressIndicatorWidget(
+                        startTime: position,
+                        endTime: duration,
+                        isPlaying: isPlaying,
+                        onPlayPause: _handlePlayPause,
+                        onSeek: _handleSeek,
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      }),
     );
   }
 }

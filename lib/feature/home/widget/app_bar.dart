@@ -38,7 +38,7 @@ class HomeAppBar extends StatelessWidget {
                   height: 48,
                   color: Colors.grey[300], // Placeholder background
                   child: profileImage != null
-                      ? Image.asset(
+                      ? Image.network(
                     profileImage!,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {

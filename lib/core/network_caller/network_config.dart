@@ -278,29 +278,24 @@ class NetworkCall {
 
   /// Multipart POST/PUT request
   /// Multipart POST/PUT request
+
   static Future<NetworkResponse> multipartRequest({
     required String url,
     Map<String, String>? fields,
     File? imageFile,
-    String methodType = 'PUT',
-    String imageFieldName = 'profileImage', // ← এটা যোগ করুন
+    String methodType = 'PUT',        // ← PUT
+    String imageFieldName = 'image',  // ← ব্যাকএন্ডে 'image'
   }) async {
     try {
-      final Uri uri = Uri.parse(url);
-      final request = http.MultipartRequest(methodType, uri);
+      final request = http.MultipartRequest(methodType, Uri.parse(url));
 
-      final authHeader = await _getAuthHeader();
-      if (authHeader != null) {
-        request.headers['Authorization'] = authHeader;
-      }
+      final auth = await _getAuthHeader();
+      if (auth != null) request.headers['Authorization'] = auth;
 
-      if (fields != null) {
-        request.fields.addAll(fields);
-      }
-
+      if (fields != null) request.fields.addAll(fields);
       if (imageFile != null) {
         request.files.add(await http.MultipartFile.fromPath(
-          imageFieldName, // ← এখানে ব্যবহার
+          imageFieldName,
           imageFile.path,
           contentType: MediaType('image', 'jpeg'),
         ));
@@ -312,48 +307,51 @@ class NetworkCall {
       _logResponse(url, response);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return NetworkResponse(
-          statusCode: response.statusCode,
-          isSuccess: true,
-          responseData: jsonDecode(response.body),
-        );
+        return NetworkResponse(statusCode: response.statusCode, isSuccess: true, responseData: jsonDecode(response.body));
       } else if (response.statusCode == 401) {
         await _logOut();
         return NetworkResponse(statusCode: 401, isSuccess: false);
       } else {
-        return NetworkResponse(
-          statusCode: response.statusCode,
-          isSuccess: false,
-          responseData: jsonDecode(response.body),
-          errorMessage: response.body,
-        );
+        return NetworkResponse(statusCode: response.statusCode, isSuccess: false, responseData: jsonDecode(response.body), errorMessage: response.body);
       }
     } catch (e) {
       return NetworkResponse(statusCode: -1, isSuccess: false, errorMessage: e.toString());
     }
   }
 
-  /*/// PUT Multipart request
+  /// PUT Multipart request
+  /// PUT Multipart request (supports optional image)
   static Future<NetworkResponse> putMultipartRequest({
     required String url,
-    required File file,
-    String? fieldName = 'file',
+    File? file, // ← অপশনাল
+    String? fieldName = 'image', // ← ডিফল্ট 'image'
     Map<String, String>? fields,
   }) async {
     try {
       final Uri uri = Uri.parse(url);
       final request = http.MultipartRequest('PUT', uri);
 
+      // Headers
       request.headers['Accept'] = 'application/json';
       final authHeader = await _getAuthHeader();
       if (authHeader != null) {
         request.headers['Authorization'] = authHeader;
       }
 
-      request.files.add(await http.MultipartFile.fromPath(fieldName!, file.path));
-
+      // Add text fields
       if (fields != null) {
         request.fields.addAll(fields);
+      }
+
+      // Add image if provided
+      if (file != null && fieldName != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            fieldName,
+            file.path,
+            contentType: MediaType('image', 'jpeg'),
+          ),
+        );
       }
 
       _logRequest(url, request.headers, requestBody: fields);
@@ -382,7 +380,6 @@ class NetworkCall {
       return NetworkResponse(statusCode: -1, isSuccess: false, errorMessage: e.toString());
     }
   }
-*/
   /// Logging
   static void _logRequest(String url, Map<String, dynamic> headers, {Map<String, dynamic>? requestBody}) {
     _logger.i("REQUEST\nURL: $url\nHeaders: $headers\nBody: ${jsonEncode(requestBody)}");

@@ -3,6 +3,7 @@ import 'package:edwardsrt/core/app_colors.dart';
 import 'package:edwardsrt/core/style/text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:get/Get.dart';
+import '../../profile/controllers/profile_controller.dart';
 import '../../purchase/screen/purchase_one_time_screen.dart';
 import '../controller/all_treatments_controller.dart';
 import '../controller/top_play_list_controller.dart';
@@ -22,29 +23,58 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final TopPlayListController topPlayListController = Get.put(TopPlayListController());
   final AllTreatmentsController allTreatmentsController = Get.put(AllTreatmentsController());
+  final ProfileApiController profileApiController = Get.put(ProfileApiController());
 
-  void _showPlaySessionDialog() {
-    showDialog(
-      context: context,
-      builder: (_) => Dialog(
+  @override
+  void initState() {
+    // TODO: implement initState
+    profileApiController.getProfile();
+    super.initState();
+  }
+
+  void _showPlaySessionDialog(int treatmentIndex) {
+    final controller = Get.find<AllTreatmentsController>();
+
+    // Loading state check
+    if (controller.isLoading.value) {
+      Get.snackbar("Loading", "Please wait, treatments are loading...");
+      return;
+    }
+
+    if (controller.topPlayList.isEmpty) {
+      Get.snackbar("Empty", "No treatments available.");
+      return;
+    }
+
+    if (treatmentIndex >= controller.topPlayList.length) {
+      Get.snackbar("Error", "Invalid treatment selected.");
+      return;
+    }
+
+    final treatment = controller.topPlayList[treatmentIndex];
+
+    Get.dialog(
+      Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child:  PlayDialogBoxWidget(),
+        child: PlayDialogBoxWidget(treatment: treatment),
       ),
+      barrierDismissible: true,
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final item=profileApiController.userProfile.value;
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
             // AppBar
-            const SliverToBoxAdapter(
+             SliverToBoxAdapter(
               child: HomeAppBar(
-                profileImage: 'assets/images/WhatsApp Image 2025-11-08 at 10.06.03_1d0d3929.jpg',
-                title: "Hey John",
+                profileImage: '${item.profileImage}',
+                title: "${item.firstName} ${item.lastName}",
                 subtitle: "What do you want to hear today?",
               ),
             ),
@@ -93,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             image: item.thumbnail,
                             title: item.title,
                             buttonText: "How to start",
-                            onTap: _showPlaySessionDialog,
+                            onTap: () => _showPlaySessionDialog(index),
                           );
                         },
                       );
