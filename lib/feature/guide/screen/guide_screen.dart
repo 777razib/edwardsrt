@@ -21,7 +21,7 @@ class _GuideScreenState extends State<GuideScreen> {
       backgroundColor: const Color(0xFFFFFFF3),
       appBar: AppBar(
         backgroundColor: AppColors.primary,
-        title: const Text(
+        title:  Text(
           " Session Guide",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),

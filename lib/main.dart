@@ -1,6 +1,7 @@
 // lib/main.dart
 import 'package:edwardsrt/localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'feature/splash/splash_screen.dart';
 
@@ -22,10 +23,12 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Roboto',
       ),
 
-      // Localization Setup
+      // --- Localization Setup ---
       translations: AppLocalization(),
-      locale: const Locale('en'), // Default language
-      fallbackLocale: const Locale('en'), // Fallback language
+      locale: const Locale('en'),
+      fallbackLocale: const Locale('en'),
+
+      // Supported languages (including Turkish)
       supportedLocales: const [
         Locale('en'),
         Locale('ar'),
@@ -34,7 +37,13 @@ class MyApp extends StatelessWidget {
         Locale('tr'),
       ],
 
-      // Splash Screen as Home
+      // Add these delegates
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+
       home: const Scaffold(
         body: SplashScreen(),
       ),

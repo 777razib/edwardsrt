@@ -54,26 +54,26 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              const Center(
+               Center(
                 child: Column(
                   children: [
                     Text(
-                      "Forget Password",
+                      "Forget Password".tr,
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
                       ),
                     ),
-                    Text("Recover your account password")
+                    Text("Recover your account password".tr)
                   ],
                 ),
               ),
               const SizedBox(height: 40),
 
               // Email Field
-              const Text(
-                "Email Address",
+               Text(
+                "Email Address".tr,
                 style: TextStyle(fontSize: 14, color: Colors.black87),
               ),
               const SizedBox(height: 8),
@@ -82,7 +82,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                 focusNode: emailFocusNode,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
-                  hintText: "Enter your email address",
+                  hintText: "Enter your email address".tr,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -109,8 +109,8 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    "Continue",
+                  child:  Text(
+                    "Continue".tr,
                     style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),
@@ -123,12 +123,11 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   }
 
   Future<void> _otpApiCallMethod()async {
-    Get.to(() => OtpScreen());
     bool isSuccess=await  resetPasswordController.resetPasswordApiCallMethod();
     if(isSuccess) {
       Get.to(() => OtpScreen());
     }else {
-      Get.snackbar("Error", "Something went wrong");
+      Get.snackbar("Error", "Something went wrong".tr);
     }
   }
 }

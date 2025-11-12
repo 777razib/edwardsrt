@@ -35,8 +35,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
-          "Sign Up",
+        title:  Text(
+          "Sign Up".tr,
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.w600,
@@ -58,11 +58,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const SizedBox(height: 10),
 
               // Header
-              const Center(
+               Center(
                 child: Column(
                   children: [
                     Text(
-                      "Create your account",
+                      "Create your account".tr,
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -71,7 +71,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      "Lorem ipsum dolor sit amet",
+                      "Lorem ipsum dolor sit amet".tr,
                       style: TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                   ],
@@ -80,33 +80,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const SizedBox(height: 30),
 
               // First Name
-              _buildLabel("First Name"),
+              _buildLabel("First Name".tr),
               _buildTextField(
                 controller: accountTextEditingController.firstNameController,
-                hintText: "Enter your first name",
+                hintText: "Enter your first name".tr,
                 validator: (value) => value?.isEmpty == true ? 'Please enter your first name' : null,
               ),
               const SizedBox(height: 16),
 
               // Last Name
-              _buildLabel("Last Name"),
+              _buildLabel("Last Name".tr),
               _buildTextField(
                 controller: accountTextEditingController.lastNameController,
-                hintText: "Enter your last name",
+                hintText: "Enter your last name".tr,
                 validator: (value) => value?.isEmpty == true ? 'Please enter your last name' : null,
               ),
               const SizedBox(height: 16),
 
               // Email
-              _buildLabel("E-mail"),
+              _buildLabel("E-mail".tr),
               _buildTextField(
                 controller: accountTextEditingController.emailController,
-                hintText: "Enter your email",
+                hintText: "Enter your email".tr,
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
-                  if (value?.isEmpty == true) return 'Please enter your email';
+                  if (value?.isEmpty == true) return 'Please enter your email'.tr;
                   if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
-                    return 'Please enter a valid email address';
+                    return 'Please enter a valid email address'.tr;
                   }
                   return null;
                 },
@@ -114,10 +114,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const SizedBox(height: 16),
 
               // Password
-              _buildLabel("Password"),
+              _buildLabel("Password".tr),
               _buildTextField(
                 controller: accountTextEditingController.passwordController,
-                hintText: "Enter your password",
+                hintText: "Enter your password".tr,
                 obscureText: _obscurePassword,
                 suffixIcon: IconButton(
                   icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined),
@@ -128,19 +128,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const SizedBox(height: 16),
 
               // Confirm Password
-              _buildLabel("Confirm Password"),
+              _buildLabel("Confirm Password".tr),
               _buildTextField(
                 controller: _confirmPasswordController,
-                hintText: "Enter your password again",
+                hintText: "Enter your password again".tr,
                 obscureText: _obscureConfirmPassword,
                 suffixIcon: IconButton(
                   icon: Icon(_obscureConfirmPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined),
                   onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
                 ),
                 validator: (value) {
-                  if (value?.isEmpty == true) return 'Please confirm your password';
+                  if (value?.isEmpty == true) return 'Please confirm your password'.tr;
                   if (value != accountTextEditingController.passwordController.text) {
-                    return 'Passwords do not match';
+                    return 'Passwords do not match'.tr;
                   }
                   return null;
                 },
@@ -157,8 +157,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                   onPressed: _handleSignUp,
-                  child: const Text(
-                    "Sign Up",
+                  child:  Text(
+                    "Sign Up".tr,
                     style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -170,11 +170,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Already have an account? ", style: TextStyle(color: Colors.black54)),
+                     Text("Already have an account? ".tr, style: TextStyle(color: Colors.black54)),
                     GestureDetector(
                       onTap: () => Get.off(() => const SignInScreen()),
-                      child: const Text(
-                        "Login",
+                      child:  Text(
+                        "Login".tr,
                         style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
                       ),
                     ),
@@ -222,18 +222,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   // Strong Password Validation
   String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) return 'Please enter a password';
-    if (value.length < 8) return 'Password must be at least 8 characters long';
+    if (value == null || value.isEmpty) return 'Please enter a password'.tr;
+    if (value.length < 8) return 'Password must be at least 8 characters long'.tr;
 
     int numCount = value.replaceAll(RegExp(r'[^0-9]'), '').length;
     int lowerCount = value.replaceAll(RegExp(r'[^a-z]'), '').length;
     int upperCount = value.replaceAll(RegExp(r'[^A-Z]'), '').length;
     int specialCount = value.replaceAll(RegExp(r'[a-zA-Z0-9]'), '').length;
 
-    if (numCount < 2) return 'Password must contain at least 2 numbers';
-    if (lowerCount < 2) return 'Password must contain at least 2 lowercase letters';
-    if (upperCount < 2) return 'Password must contain at least 2 uppercase letters';
-    if (specialCount < 2) return 'Password must contain at least 2 special characters';
+    if (numCount < 2) return 'Password must contain at least 2 numbers'.tr;
+    if (lowerCount < 2) return 'Password must contain at least 2 lowercase letters'.tr;
+    if (upperCount < 2) return 'Password must contain at least 2 uppercase letters'.tr;
+    if (specialCount < 2) return 'Password must contain at least 2 special characters'.tr;
 
     return null;
   }
