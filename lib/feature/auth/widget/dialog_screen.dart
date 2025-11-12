@@ -26,12 +26,12 @@ class DialogScreen extends StatelessWidget {
           ),
           SizedBox(height: 20),
           Text(
-            'Congratulations',
+            'Congratulations'.tr,
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
           SizedBox(height: 8),
           Text(
-            'Your new password has been successfully.',
+            'Your new password has been successfully.'.tr,
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 14, color: Colors.black54),
           ),
@@ -47,7 +47,7 @@ class DialogScreen extends StatelessWidget {
                 backgroundColor: AppColors.primary,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              child: Text('Continue', style: TextStyle(fontSize: 16, color: Colors.white)),
+              child: Text('Continue'.tr, style: TextStyle(fontSize: 16, color: Colors.white)),
             ),
           ),
         ],

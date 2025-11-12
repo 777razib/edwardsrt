@@ -84,9 +84,9 @@ class _SignInScreenState extends State<SignInScreen> {
               const SizedBox(height: 16),
 
               // Title
-              const Center(
+               Center(
                 child: Text(
-                  "Sign In",
+                  "Sign In".tr,
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -98,7 +98,7 @@ class _SignInScreenState extends State<SignInScreen> {
               const SizedBox(height: 40),
 
               // Email Field
-              const Text("Email Address", style: TextStyle(fontSize: 14, color: Colors.black87)),
+               Text("Email Address".tr, style: TextStyle(fontSize: 14, color: Colors.black87)),
               const SizedBox(height: 8),
               TextField(
                 controller: _acctCtrl.emailController,
@@ -106,7 +106,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
-                  hintText: "Enter your email address",
+                  hintText: "Enter your email address".tr,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -119,7 +119,7 @@ class _SignInScreenState extends State<SignInScreen> {
               const SizedBox(height: 20),
 
               // Password Field
-              const Text("Password", style: TextStyle(fontSize: 14, color: Colors.black87)),
+               Text("Password".tr, style: TextStyle(fontSize: 14, color: Colors.black87)),
               const SizedBox(height: 8),
               TextField(
                 controller: _acctCtrl.passwordController,
@@ -127,7 +127,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 obscureText: obscurePassword,
                 textInputAction: TextInputAction.done,
                 decoration: InputDecoration(
-                  hintText: "Enter your password",
+                  hintText: "Enter your password".tr,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -158,12 +158,12 @@ class _SignInScreenState extends State<SignInScreen> {
                         side: BorderSide(color: Colors.grey.shade400),
                         onChanged: (value) => setState(() => rememberMe = value ?? false),
                       ),
-                      const Text("Remember Me", style: TextStyle(fontSize: 14)),
+                       Text("Remember Me".tr, style: TextStyle(fontSize: 14)),
                     ],
                   ),
                   TextButton(
                     onPressed: () => Get.to(() => const ForgetPasswordScreen()),
-                    child: const Text("Forgot Password", style: TextStyle(color: Colors.red)),
+                    child:  Text("Forgot Password".tr, style: TextStyle(color: Colors.red)),
                   ),
                 ],
               ),
@@ -181,8 +181,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     elevation: 2,
                   ),
-                  child: const Text(
-                    "Sign In",
+                  child:  Text(
+                    "Sign In".tr,
                     style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -195,11 +195,11 @@ class _SignInScreenState extends State<SignInScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Don’t have an account? "),
+                     Text("Don’t have an account? ".tr),
                     GestureDetector(
                       onTap: () => Get.to(() => const SignUpScreen()),
                       child: Text(
-                        "Sign Up",
+                        "Sign Up".tr,
                         style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
                       ),
                     ),
@@ -222,8 +222,8 @@ class _SignInScreenState extends State<SignInScreen> {
       Get.offAll(() => const CustomBottomNavBar()); // Clears navigation stack
     } else {
       Get.snackbar(
-        "Login Failed",
-        _loginCtrl.errorMessage ?? "Something went wrong",
+        "Login Failed".tr,
+        _loginCtrl.errorMessage ?? "Something went wrong".tr,
         backgroundColor: Colors.red.withOpacity(0.1),
         colorText: Colors.red,
       );

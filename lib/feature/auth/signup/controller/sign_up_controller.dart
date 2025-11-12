@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../../core/network_caller/network_config.dart';
 import '../../../../core/network_path/natwork_path.dart';
+import '../../../../core/services_class/shared_preferences_data_helper.dart';
 import '../../account text editing controller/account_text_editing_controller.dart';
 import '../../model/user_model.dart';
 
@@ -41,11 +42,11 @@ class SignUpApiController extends GetxController {
       debugPrint("Signup Response: ${response.responseData}");
 
       if (response.isSuccess) {
-       /* var token = response.responseData!["data"]["token"];
+        var token = response.responseData!["data"]["token"];
         userModel = UserModel.fromJson(response.responseData!["data"]["newUser"]);
 
         await AuthController.setUserData(token, userModel!);
-        await AuthController.getUserData();*/
+        await AuthController.getUserData();
 
         _errorMessage = null;
         isSuccess = true;

@@ -85,15 +85,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 delegate: SliverChildListDelegate([
                   // Purchase Button
                   PurchaseNowButtonWidget(
-                    title: "One purchase.",
-                    subTitle: "Endless relaxation",
-                    buttonText: "Purchase now",
+                    title: "One purchase.".tr,
+                    subTitle: "Endless relaxation".tr,
+                    buttonText: "Purchase now".tr,
                     onTap: () => Get.to(() => PurchaseOneTimeScreen()),
                   ),
                   const SizedBox(height: 24),
 
                   // Treatments Section
-                  Text("Treatments", style: globalTextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+                  Text("Treatments".tr, style: globalTextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
                   const SizedBox(height: 12),
 
                   // Horizontal List (Treatments)
@@ -110,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       }
                       if (allTreatmentsController.topPlayList.isEmpty) {
-                        return const Center(child: Text("No treatments"));
+                        return  Center(child: Text("No treatments".tr));
                       }
 
                       return ListView.separated(
@@ -122,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           return TreatmentsWidget(
                             image: item.thumbnail,
                             title: item.title,
-                            buttonText: "How to start",
+                            buttonText: "How to start".tr,
                             onTap: () => _showPlaySessionDialog(index),
                           );
                         },
@@ -132,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 32),
 
                   // Top Playlists Section
-                  Text("Top Playlists", style: globalTextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+                  Text("Top Playlists".tr, style: globalTextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
                   const SizedBox(height: 12),
 
                   // Vertical List (AudioPlayWidget)
@@ -147,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     }
                     if (topPlayListController.topPlayList.isEmpty) {
-                      return const Center(child: Text("No playlists"));
+                      return  Center(child: Text("No playlists".tr));
                     }
 
                     return Column(

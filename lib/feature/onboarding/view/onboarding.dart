@@ -11,9 +11,9 @@ class OnboardingScreen extends StatelessWidget {
   final OnboardingController controller = Get.put(OnboardingController());
 
   final List<String> pageTexts = [
-    "Sometimes cravings and stress feel too heavy.",
-    "Sometimes cravings and stress feel too heavy.",
-    "One sound helps you feel lighter, calmer, stronger.",
+    "Sometimes cravings and stress feel too heavy.".tr,
+    "Sometimes cravings and stress feel too heavy.".tr,
+    "One sound helps you feel lighter, calmer, stronger.".tr,
   ];
 
   @override
@@ -40,7 +40,7 @@ class OnboardingScreen extends StatelessWidget {
               child: GestureDetector(
                 onTap: () => Get.to(() => SignInScreen()),
                 child: Text(
-                  "Skip",
+                  "Skip".tr,
                   style: globalTextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
@@ -108,7 +108,7 @@ class OnboardingScreen extends StatelessWidget {
                           shadowColor: Colors.amber.withOpacity(0.6),
                         ),
                         child: Text(
-                          "Get Started",
+                          "Get Started".tr,
                           style: globalTextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

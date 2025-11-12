@@ -61,16 +61,16 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
               child: Column(
                 children: [
                   Text(
-                    'Create a',
+                    'Create a'.tr,
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'New Password',
+                    'New Password'.tr,
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 8),
                   Text(
-                    'Enter your new password',
+                    'Enter your new password'.tr,
                     style: TextStyle(fontSize: 14, color: Colors.black54),
                   ),
                 ],
@@ -78,7 +78,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
             ),
             SizedBox(height: 30),
             Text(
-              'New Password',
+              'New Password'.tr,
               style: TextStyle(fontSize: 14, color: Colors.black87),
             ),
             SizedBox(height: 8),
@@ -90,7 +90,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                   borderRadius: BorderRadius.circular(8),
                   borderSide: const BorderSide(color: AppColors.primary),
                 ),
-                hintText: 'Enter new password',
+                hintText: 'Enter new password'.tr,
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscureNewPassword ? Icons.visibility_off : Icons.visibility,
@@ -111,7 +111,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
             ),
             SizedBox(height: 20),
             Text(
-              'Confirm Password',
+              'Confirm Password'.tr,
               style: TextStyle(fontSize: 14, color: Colors.black87),
             ),
             SizedBox(height: 8),
@@ -123,7 +123,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                   borderRadius: BorderRadius.circular(8),
                   borderSide: const BorderSide(color: AppColors.primary),
                 ),
-                hintText: 'Confirm your password',
+                hintText: 'Confirm your password'.tr,
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
@@ -153,7 +153,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
                 child: Text(
-                  'Continue',
+                  'Continue'.tr,
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),

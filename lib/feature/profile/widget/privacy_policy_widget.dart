@@ -1,5 +1,6 @@
 // privacy_policy_widget.dart
 import 'package:flutter/material.dart';
+import 'package:get/Get.dart';
 
 class PrivacyPolicyWidget extends StatelessWidget {
   const PrivacyPolicyWidget({super.key});
@@ -9,8 +10,8 @@ class PrivacyPolicyWidget extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFF3),
       appBar: AppBar(
-        title: const Text(
-          'Privacy Policy',
+        title:  Text(
+          'Privacy Policy'.tr,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: const Color(0xFFFFFFF3),
@@ -18,13 +19,13 @@ class PrivacyPolicyWidget extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
       ),
-      body: const SingleChildScrollView(
+      body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Last Updated: October 31, 2025',
+              'Last Updated: October 31, 2025'.tr,
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.grey,
@@ -34,93 +35,93 @@ class PrivacyPolicyWidget extends StatelessWidget {
             SizedBox(height: 16),
 
             Text(
-              'At Linly, we value your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your data when you use our app.',
+              'At Linly, we value your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your data when you use our app.'.tr,
               style: TextStyle(fontSize: 15, height: 1.6, color: Colors.black87),
             ),
             SizedBox(height: 24),
 
-            _SectionTitle(title: '1. Information We Collect'),
+            _SectionTitle(title: '1. Information We Collect'.tr),
             _SectionContent(
               content:
               '• Personal Information: Name, email, and profile details when you create an account.\n'
                   '• Usage Data: Content you view, guide history, and interaction patterns.\n'
                   '• Device Information: Device type, OS version, and unique identifiers.\n'
-                  '• Location Data: Approximate location (if enabled) to improve recommendations.',
+                  '• Location Data: Approximate location (if enabled) to improve recommendations.'.tr,
             ),
 
             SizedBox(height: 20),
 
-            _SectionTitle(title: '2. How We Use Your Information'),
+            _SectionTitle(title: '2. How We Use Your Information'.tr),
             _SectionContent(
               content:
               '• To provide and improve our services (personalized content, recommendations).\n'
                   '• To communicate with you (updates, notifications, support).\n'
                   '• To analyze usage and enhance user experience.\n'
-                  '• To comply with legal obligations.',
+                  '• To comply with legal obligations.'.tr,
             ),
 
             SizedBox(height: 20),
 
-            _SectionTitle(title: '3. Data Sharing'),
+            _SectionTitle(title: '3. Data Sharing'.tr),
             _SectionContent(
               content:
               'We do not sell your personal data. We may share information with:\n'
                   '• Service providers (hosting, analytics, payment processors).\n'
                   '• Legal authorities when required by law.\n'
-                  '• In case of merger or acquisition.',
+                  '• In case of merger or acquisition.'.tr,
             ),
 
             SizedBox(height: 20),
 
-            _SectionTitle(title: '4. Your Rights'),
+            _SectionTitle(title: '4. Your Rights'.tr),
             _SectionContent(
               content:
               '• Access, update, or delete your personal data.\n'
                   '• Opt out of personalized recommendations.\n'
                   '• Request data export.\n'
-                  '• Withdraw consent at any time.',
+                  '• Withdraw consent at any time.'.tr,
             ),
 
             SizedBox(height: 20),
 
-            _SectionTitle(title: '5. Data Security'),
+            _SectionTitle(title: '5. Data Security'.tr),
             _SectionContent(
               content:
-              'We use industry-standard encryption and security measures to protect your data. However, no system is 100% secure, and we cannot guarantee absolute security.',
+              'We use industry-standard encryption and security measures to protect your data. However, no system is 100% secure, and we cannot guarantee absolute security.'.tr,
             ),
 
             SizedBox(height: 20),
 
-            _SectionTitle(title: '6. Third-Party Links'),
+            _SectionTitle(title: '6. Third-Party Links'.tr),
             _SectionContent(
               content:
-              'Our app may contain links to third-party websites. We are not responsible for their privacy practices.',
+              'Our app may contain links to third-party websites. We are not responsible for their privacy practices.'.tr,
             ),
 
             SizedBox(height: 20),
 
-            _SectionTitle(title: '7. Children’s Privacy'),
+            _SectionTitle(title: '7. Children’s Privacy'.tr),
             _SectionContent(
               content:
-              'Linly is not intended for children under 13. We do not knowingly collect data from children.',
+              'Linly is not intended for children under 13. We do not knowingly collect data from children.'.tr,
             ),
 
             SizedBox(height: 20),
 
-            _SectionTitle(title: '8. Changes to This Policy'),
+            _SectionTitle(title: '8. Changes to This Policy'.tr),
             _SectionContent(
               content:
-              'We may update this policy from time to time. We will notify you of significant changes via email or in-app notification.',
+              'We may update this policy from time to time. We will notify you of significant changes via email or in-app notification.'.tr,
             ),
 
             SizedBox(height: 20),
 
-            _SectionTitle(title: '9. Contact Us'),
+            _SectionTitle(title: '9. Contact Us'.tr),
             _SectionContent(
               content:
               'If you have questions about this Privacy Policy, contact us at:\n'
                   'Email: privacy@linly.app\n'
-                  'Address: Dhaka, Bangladesh',
+                  'Address: Dhaka, Bangladesh'.tr,
             ),
 
             SizedBox(height: 32),
@@ -128,7 +129,7 @@ class PrivacyPolicyWidget extends StatelessWidget {
             // Footer
             Center(
               child: Text(
-                'Linly © 2025. All rights reserved.',
+                'Linly © 2025. All rights reserved.'.tr,
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey,

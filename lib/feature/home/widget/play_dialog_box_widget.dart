@@ -1,10 +1,11 @@
+// lib/feature/home/widget/play_dialog_box_widget.dart
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:edwardsrt/core/app_colors.dart';
 import 'package:edwardsrt/core/style/text_style.dart';
 import 'package:edwardsrt/feature/home/model/session_model.dart';
 import 'package:edwardsrt/feature/home/model/top_play_list_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../audio/screen/audio_screen.dart';
 
 /// Controller for managing selected session
@@ -21,8 +22,7 @@ class PlayDialogBoxWidget extends StatelessWidget {
 
   PlayDialogBoxWidget({super.key, required this.treatment});
 
-  // Use unique tag to avoid conflict in multiple dialogs
-  late final String _controllerTag = 'session_${treatment.id}';
+  late final String _controllerTag = '${treatment.id}';
   late final SessionController ctrl;
 
   @override
@@ -32,16 +32,17 @@ class PlayDialogBoxWidget extends StatelessWidget {
 
     // Convert howToStart → Session list
     final List<Session> sessions = treatment.howToStart.map((howTo) {
+      // debugPrint removed in production
       return Session(
         image: howTo.image,
         title: howTo.title,
         subtitle: howTo.subtitle,
-        duration: const Duration(minutes: 5), // Default or enhance later
-        audioPath: treatment.file, // Same audio for all steps
+        duration: const Duration(minutes: 5),
+        audioPath: treatment.file,
       );
     }).toList();
 
-    // Clean up controller when dialog closes
+    // Auto cleanup when dialog closes
     ever(ctrl.selectedIndex, (_) {});
     Get.find<SessionController>(tag: _controllerTag).onClose();
 
@@ -119,7 +120,7 @@ class PlayDialogBoxWidget extends StatelessWidget {
                   ? () {
                 final selectedSession = sessions[ctrl.selectedIndex.value];
                 Get.back(); // Close dialog
-                Get.to(() => AudioScreen(id: "${_controllerTag}",));
+                Get.to(() => AudioScreen(id: _controllerTag));
               }
                   : null,
               child: Container(
@@ -149,7 +150,7 @@ class PlayDialogBoxWidget extends StatelessWidget {
   }
 }
 
-/// Reusable Session Item Widget
+/// Reusable Session Item Widget with CachedNetworkImage
 class NewWidget extends StatelessWidget {
   const NewWidget({
     super.key,
@@ -179,31 +180,32 @@ class NewWidget extends StatelessWidget {
         ),
         child: Row(
           children: [
+            // Fixed: Use CachedNetworkImage
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: SizedBox(
                 width: 48,
                 height: 48,
-                child: Image.network(
-                  session.image,
+                child: CachedNetworkImage(
+                  imageUrl: session.image,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+                  placeholder: (context, url) => Container(
+                    color: Colors.grey[200],
+                    child: const Center(
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => Container(
                     color: Colors.grey[200],
                     child: const Icon(Icons.image_not_supported, color: Colors.grey),
                   ),
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Container(
-                      color: Colors.grey[200],
-                      child: const Center(
-                        child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      ),
-                    );
-                  },
                 ),
               ),
             ),

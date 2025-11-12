@@ -82,8 +82,8 @@ class _OtpScreenState extends State<OtpScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 20),
-            const Text(
-              'Enter OTP',
+             Text(
+              'Enter OTP'.tr,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
@@ -92,7 +92,7 @@ class _OtpScreenState extends State<OtpScreen> {
               text: TextSpan(
                 style: const TextStyle(color: Colors.grey, fontSize: 14),
                 children: [
-                  const TextSpan(text: "We have just sent you 4 digit code via your\nemail "),
+                   TextSpan(text: "We have just sent you 4 digit code via your\nemail ".tr),
                   TextSpan(
                     text: accountTextEditingController.emailController.text,
                     style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
@@ -153,8 +153,8 @@ class _OtpScreenState extends State<OtpScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   elevation: 2,
                 ),
-                child: const Text(
-                  'Confirm Code',
+                child:  Text(
+                  'Confirm Code'.tr,
                   style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w600),
                 ),
               ),
@@ -167,7 +167,7 @@ class _OtpScreenState extends State<OtpScreen> {
               text: TextSpan(
                 style: const TextStyle(color: Colors.black, fontSize: 14),
                 children: [
-                  const TextSpan(text: 'Resend code in '),
+                   TextSpan(text: 'Resend code in '.tr),
                   TextSpan(
                     text: '$_secondsRemaining s',
                     style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
@@ -184,11 +184,11 @@ class _OtpScreenState extends State<OtpScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Didn't receive code? ", style: TextStyle(color: Colors.grey)),
+                   Text("Didn't receive code? ".tr, style: TextStyle(color: Colors.grey)),
                   GestureDetector(
                     onTap: _secondsRemaining == 0 ? resendOtpApiCallMethod : null,
                     child: Text(
-                      'Resend Code',
+                      'Resend Code'.tr,
                       style: TextStyle(
                         color: _secondsRemaining == 0 ? AppColors.primary : Colors.grey,
                         fontWeight: FontWeight.w600,
@@ -211,7 +211,7 @@ class _OtpScreenState extends State<OtpScreen> {
     debugPrint("OTP from getOtpString: '$otp'");
 
     if (otp.length != 4 || !RegExp(r'^\d{4}$').hasMatch(otp)) {
-      Get.snackbar("Error", "Please enter a valid 4-digit OTP");
+      Get.snackbar("Error".tr, "Please enter a valid 4-digit OTP".tr);
       return;
     }
 
@@ -219,14 +219,14 @@ class _OtpScreenState extends State<OtpScreen> {
     if (isSuccess) {
       Get.to(() => CreateNewPasswordScreen());
     } else {
-      Get.snackbar("Error", otpController.errorMessage ?? "Invalid OTP");
+      Get.snackbar("Error".tr, otpController.errorMessage ?? "Invalid OTP".tr);
     }
   }
 
   // Resend OTP
   Future<void> resendOtpApiCallMethod() async {
     if (_secondsRemaining != 0) {
-      Get.snackbar("Wait", "Please wait for the timer to finish");
+      Get.snackbar("Wait".tr, "Please wait for the timer to finish".tr);
       return;
     }
 
@@ -236,9 +236,9 @@ class _OtpScreenState extends State<OtpScreen> {
         _secondsRemaining = 60;
         startTimer();
       });
-      Get.snackbar("Success", "OTP sent successfully");
+      Get.snackbar("Success", "OTP sent successfully".tr);
     } else {
-      Get.snackbar("Error", "Failed to resend OTP");
+      Get.snackbar("Error", "Failed to resend OTP".tr);
     }
   }
 }

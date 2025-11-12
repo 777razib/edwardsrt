@@ -3,8 +3,8 @@ class Urls {
 
   // Auth URLs
   static const String login = '$baseUrl/auth/login';
-  static const String authSignUp = '$baseUrl/auth/signup';
-  static const String authForgetSendOtp = '$baseUrl/auth/send-otp';
+  static const String authSignUp = '$baseUrl/auth/register';
+  static const String authForgetSendOtp = '$baseUrl/auth/forgot-password';
   static const String authFVerifyOtp = '$baseUrl/auth/verify-otp';
   static const String authForgetResetPassword = '$baseUrl/auth/reset-password';
 

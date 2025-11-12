@@ -253,8 +253,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _showLanguageDialog(BuildContext context) {
     showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) { // Use the context from the builder
+      context: context, // Use the passed context
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: Text('Change Language'.tr),
@@ -263,10 +263,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 _buildLanguageOption('English', const Locale('en')),
-                _buildLanguageOption('Arabic', const Locale('ar')),
-                _buildLanguageOption('Hindi', const Locale('hi')),
-                _buildLanguageOption('Chinese', const Locale('zh')),
-                _buildLanguageOption('Turkish', const Locale('tr')),
+                _buildLanguageOption('العربية', const Locale('ar')),
+                _buildLanguageOption('हिन्दी', const Locale('hi')),
+                _buildLanguageOption('中文', const Locale('zh')),
+                _buildLanguageOption('Türkçe', const Locale('tr')),
               ],
             ),
           ),
