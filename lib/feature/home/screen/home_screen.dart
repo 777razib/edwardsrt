@@ -49,9 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
       Get.snackbar("Error".tr, "Invalid treatment selected.".tr);
       return;
     }
-
     final treatment = controller.topPlayList[treatmentIndex];
-
     Get.dialog(
       Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -60,7 +58,6 @@ class _HomeScreenState extends State<HomeScreen> {
       barrierDismissible: true,
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,7 +71,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 final user = profileApiController.userProfile.value;
                 final fullName = "${user.firstName ?? ''} ${user.lastName ?? ''}".trim();
                 final isLoggedIn = fullName.isNotEmpty;
-
                 return HomeAppBar(
                   profileImage: user.profileImage?.isNotEmpty == true ? user.profileImage : null,
                   title: isLoggedIn ? fullName : 'Guest User'.tr,
@@ -82,7 +78,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               }),
             ),
-
             SliverPadding(
               padding: const EdgeInsets.all(16),
               sliver: SliverList(
@@ -95,11 +90,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTap: () => Get.to(() => PurchaseOneTimeScreen()),
                   ),
                   const SizedBox(height: 24),
-
                   // Treatments Section
                   Text("treatments".tr, style: globalTextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
                   const SizedBox(height: 12),
-
                   // Horizontal List (Treatments)
                   SizedBox(
                     height: 220,
@@ -116,7 +109,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (allTreatmentsController.topPlayList.isEmpty) {
                         return  Center(child: Text("No treatments available.".tr));
                       }
-
                       return ListView.separated(
                         scrollDirection: Axis.horizontal,
                         itemCount: allTreatmentsController.topPlayList.length,
@@ -134,11 +126,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     }),
                   ),
                   const SizedBox(height: 32),
-
                   // Top Playlists Section
                   Text("Top Playlists".tr, style: globalTextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
                   const SizedBox(height: 12),
-
                   // Vertical List (AudioPlayWidget)
                   Obx(() {
                     if (topPlayListController.isLoading.value) {
@@ -153,7 +143,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     if (topPlayListController.topPlayList.isEmpty) {
                       return  Center(child: Text("No playlists".tr));
                     }
-
                     return Column(
                       children: topPlayListController.topPlayList.asMap().entries.map((entry) {
                         final index = entry.key;
