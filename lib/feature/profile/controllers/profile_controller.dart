@@ -104,6 +104,7 @@ class ProfileApiController extends GetxController {
     try {
       final response = await NetworkCall.deleteRequest(url: Urls.deleteUserDataUrl);
       if (response.isSuccess) {
+        await SharedPreferencesHelper.getAccessToken();
         await SharedPreferencesHelper.clearAccessToken();
         Get.offAll(() => const SignInScreen());
         Get.snackbar('Deleted', 'Account deleted', backgroundColor: Colors.red, colorText: Colors.white);

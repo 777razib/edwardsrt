@@ -12,7 +12,7 @@ class Urls {
   static const String getUserDataUrl = '$baseUrl/users/profile';
   static const String editUserDataUrl = '$baseUrl/users/update-profile';
   static const String logout = '$baseUrl/profile/logout';
-  static const String deleteUserDataUrl = '$baseUrl/profile';
+  static const String deleteUserDataUrl = '$baseUrl/auth/delete-user';
 
   // Treatments URLs
   static const String treatmentsAll = '$baseUrl/treatments/all';

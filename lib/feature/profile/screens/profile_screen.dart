@@ -1,3 +1,4 @@
+// lib/feature/profile/screens/profile_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
@@ -34,7 +35,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 60),
-
             // Profile Header
             Obx(() {
               final user = controller.userProfile.value;
@@ -49,7 +49,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               return _buildProfileCard(user, fullName, controller);
             }),
-
             const SizedBox(height: 24),
             _buildMenuSection(context, controller),
           ],
@@ -66,7 +65,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade300),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0, 2))
+        ],
       ),
       child: Row(
         children: [
@@ -95,7 +96,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade300),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0, 2))
+        ],
       ),
       child: Row(
         children: [
@@ -222,7 +225,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.grey.shade300),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 6, offset: const Offset(0, 2))],
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 6, offset: const Offset(0, 2))
+            ],
           ),
           child: Column(
             children: items.asMap().entries.map((e) {
@@ -253,8 +258,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _showLanguageDialog(BuildContext context) {
     showDialog(
-      context: context, // Use the passed context
-      builder: (BuildContext dialogContext) {
+      context: context,
+      builder: (dialogContext) {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: Text('Change Language'.tr),
@@ -266,7 +271,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _buildLanguageOption('العربية', const Locale('ar')),
                 _buildLanguageOption('हिन्दी', const Locale('hi')),
                 _buildLanguageOption('中文', const Locale('zh')),
-                _buildLanguageOption('Türkçe', const Locale('tr')),
               ],
             ),
           ),
@@ -285,7 +289,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       trailing: isSelected ? const Icon(Icons.check, color: AppColors.primary) : null,
       onTap: () {
         Get.updateLocale(locale);
-        Get.back(); // Close dialog
+        Get.back();
       },
     );
   }
@@ -305,12 +309,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               final success = await controller.logout();
               if (Get.isDialogOpen == true) Get.back();
               if (!success) {
-                Get.snackbar(
-                  'Error'.tr,
-                  'Logout failed'.tr,
-                  backgroundColor: Colors.red,
-                  colorText: Colors.white,
-                );
+                Get.snackbar('Error'.tr, 'Logout failed'.tr, backgroundColor: Colors.red, colorText: Colors.white);
               }
             },
             child: Text('Log Out'.tr, style: const TextStyle(color: Colors.red)),
@@ -335,7 +334,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
               final success = await controller.deleteAccount();
               if (Get.isDialogOpen == true) Get.back();
-              if (!success) Get.snackbar('Error'.tr, 'Delete failed'.tr, backgroundColor: Colors.red, colorText: Colors.white);
+              if (!success) {
+                Get.snackbar('Error'.tr, 'Delete failed'.tr, backgroundColor: Colors.red, colorText: Colors.white);
+              }
             },
             child: Text('Delete'.tr, style: const TextStyle(color: Colors.red)),
           ),

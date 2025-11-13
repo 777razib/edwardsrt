@@ -52,7 +52,7 @@ class AboutUsWidget extends StatelessWidget {
 
             // App Name
             const Text(
-              "Linly",
+              "Edwardsrt",
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,

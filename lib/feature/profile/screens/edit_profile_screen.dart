@@ -14,7 +14,7 @@ class EditProfilePage extends StatelessWidget {
     final EditProfileController controller = Get.put(EditProfileController()); // ← Get.put() না!
 
     return Scaffold(
-      appBar: CustomAppBar(title: const Text('Personal Details')),
+      appBar: CustomAppBar(title:  Text('Personal Details'.tr)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -86,8 +86,8 @@ class EditProfilePage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
-                child: const Text(
-                  'Save Changes',
+                child:  Text(
+                  'Save Changes'.tr,
                   style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
