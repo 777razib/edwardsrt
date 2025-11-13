@@ -78,7 +78,18 @@ class AppLocalization extends Translations {
       "affirmativeQuote": "“The heart heals, not by forgetting, but by forgiving and moving forward”",
       "home": "Home",
       "guide": "Guide",
-      "profile": "Profile"
+      "profile": "Profile",
+      "Guest User": "Guest User",
+      "Login to see profile": "Login to see profile",
+      "Account Actions": "Account Actions",
+      "Are you sure?": "Are you sure?",
+      "Cancel": "Cancel",
+      "Error": "Error",
+      "Logout failed": "Logout failed",
+      "This cannot be undone.": "This cannot be undone.",
+      "Delete": "Delete",
+      "Delete failed": "Delete failed",
+      "Change Language": "Change Language"
     },
     'ar': {
       "appName": "منظف العقل",
@@ -167,6 +178,17 @@ class AppLocalization extends Translations {
       "home": "الرئيسية",
       "guide": "الدليل",
       "profile": "الملف الشخصي",
+      "Guest User": "مستخدم زائر",
+      "Login to see profile": "تسجيل الدخول لرؤية الملف الشخصي",
+      "Account Actions": "إجراءات الحساب",
+      "Are you sure?": "هل أنت متأكد؟",
+      "Cancel": "إلغاء",
+      "Error": "خطأ",
+      "Logout failed": "فشل تسجيل الخروج",
+      "This cannot be undone.": "لا يمكن التراجع عن هذا.",
+      "Delete": "حذف",
+      "Delete failed": "فشل الحذف",
+      "Change Language": "تغيير اللغة"
     },
     'hi': {
       "appName": "माइंड क्लेंज़र",
@@ -254,6 +276,17 @@ class AppLocalization extends Translations {
       "home": "होम",
       "guide": "मार्गदर्शिका",
       "profile": "प्रोफ़ाइल",
+      "Guest User": "अतिथि उपयोगकर्ता",
+      "Login to see profile": "प्रोफ़ाइल देखने के लिए लॉग इन करें",
+      "Account Actions": "खाता क्रियाएँ",
+      "Are you sure?": "क्या आप निश्चित हैं?",
+      "Cancel": "रद्द करें",
+      "Error": "त्रुटि",
+      "Logout failed": "लॉगआउट विफल",
+      "This cannot be undone.": "यह पूर्ववत नहीं किया जा सकता है।",
+      "Delete": "हटाएं",
+      "Delete failed": "हटाने में विफल",
+      "Change Language": "भाषा बदलें"
     },
     'zh': {
       "appName": "心灵净化",
@@ -331,6 +364,17 @@ class AppLocalization extends Translations {
       "home": "首页",
       "guide": "指南",
       "profile": "个人资料",
+      "Guest User": "访客用户",
+      "Login to see profile": "登录查看个人资料",
+      "Account Actions": "账户操作",
+      "Are you sure?": "您确定吗？",
+      "Cancel": "取消",
+      "Error": "错误",
+      "Logout failed": "注销失败",
+      "This cannot be undone.": "此操作无法撤销。",
+      "Delete": "删除",
+      "Delete failed": "删除失败",
+      "Change Language": "更改语言"
     },
   };
 }

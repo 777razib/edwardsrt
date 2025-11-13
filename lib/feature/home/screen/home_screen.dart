@@ -27,7 +27,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     profileApiController.getProfile();
     super.initState();
   }
@@ -35,7 +34,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showPlaySessionDialog(int treatmentIndex) {
     final controller = Get.find<AllTreatmentsController>();
 
-    // Loading state check
     if (controller.isLoading.value) {
       Get.snackbar("Loading", "Please wait, treatments are loading...");
       return;
@@ -64,26 +62,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final item=profileApiController.userProfile.value;
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            // AppBar
             SliverToBoxAdapter(
-              child: item == null
-                  ? const Center(child: CircularProgressIndicator())
-                  : HomeAppBar(
-                profileImage: item.profileImage?.isNotEmpty == true ? item.profileImage : null,
-                title: [
-                  item.firstName ?? '',
-                  item.lastName ?? '',
-                ].join(' ').trim().isEmpty
-                    ? 'Guest User'
-                    : '${item.firstName ?? ''} ${item.lastName ?? ''}'.trim(),
-                subtitle: "What do you want to hear today?",
-              ),
+              child: Obx(() {
+                final user = profileApiController.userProfile.value;
+                final fullName = "${user.firstName ?? ''} ${user.lastName ?? ''}".trim();
+                final isLoggedIn = fullName.isNotEmpty;
+
+                return HomeAppBar(
+                  profileImage: user.profileImage?.isNotEmpty == true ? user.profileImage : null,
+                  title: isLoggedIn ? fullName : 'Guest User'.tr,
+                  subtitle: "What do you want to hear today?".tr,
+                );
+              }),
             ),
 
             SliverPadding(
@@ -117,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       }
                       if (allTreatmentsController.topPlayList.isEmpty) {
-                        return  Center(child: Text("No treatments".tr));
+                        return Center(child: Text("No treatments".tr));
                       }
 
                       return ListView.separated(
@@ -154,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     }
                     if (topPlayListController.topPlayList.isEmpty) {
-                      return  Center(child: Text("No playlists".tr));
+                      return Center(child: Text("No playlists".tr));
                     }
 
                     return Column(

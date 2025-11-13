@@ -268,6 +268,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 _buildLanguageOption('English', const Locale('en')),
+                _buildLanguageOption('বাংলা', const Locale('bn')),
                 _buildLanguageOption('العربية', const Locale('ar')),
                 _buildLanguageOption('हिन्दी', const Locale('hi')),
                 _buildLanguageOption('中文', const Locale('zh')),
