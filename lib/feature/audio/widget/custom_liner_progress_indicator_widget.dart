@@ -1,3 +1,4 @@
+// lib/feature/audio/widget/custom_liner_progress_indicator_widget.dart
 import 'package:edwardsrt/core/app_colors.dart';
 import 'package:edwardsrt/core/style/text_style.dart';
 import 'package:flutter/material.dart';
@@ -71,17 +72,17 @@ class CustomLinerProgressIndicatorWidget extends StatelessWidget {
                   child: Container(
                     height: 4,
                     decoration: BoxDecoration(
-                      color: const Color(0xff2399F6), // Blue progress
+                      color: const Color(0xff2399F6),
                       borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
                 ),
-                ),
 
-                // Thumb (White Circle)
+                // Thumb
                 FractionallySizedBox(
                   widthFactor: 1.0,
                   child: Align(
-                    alignment: Alignment(progress * 2 - 1, 0), // -1 to 1
+                    alignment: Alignment(progress * 2 - 1, 0),
                     child: Container(
                       width: 12,
                       height: 12,
@@ -138,15 +139,11 @@ class CustomLinerProgressIndicatorWidget extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Previous
             IconButton(
               onPressed: onPrevious,
               icon: const Icon(Icons.skip_previous, color: Colors.white, size: 36),
             ),
-
             const SizedBox(width: 30),
-
-            // Play/Pause Button
             GestureDetector(
               onTap: onPlayPause,
               child: Container(
@@ -176,10 +173,7 @@ class CustomLinerProgressIndicatorWidget extends StatelessWidget {
                 ),
               ),
             ),
-
             const SizedBox(width: 30),
-
-            // Next
             IconButton(
               onPressed: onNext,
               icon: const Icon(Icons.skip_next, color: Colors.white, size: 36),

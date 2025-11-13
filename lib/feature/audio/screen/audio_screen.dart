@@ -1,10 +1,8 @@
-// lib/feature/audio/screen/audio_screen.dart
-import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:edwardsrt/feature/home/model/session_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/Get.dart';
-import 'package:just_audio/just_audio.dart';
-import 'package:youtube_explode_dart/youtube_explode_dart.dart' as yt;
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../controller/single_audio_api_controller.dart';
 import '../widget/audio_app_bar_widget.dart';
 import '../widget/audio_winer_widger.dart';
@@ -19,14 +17,13 @@ class AudioScreen extends StatefulWidget {
 }
 
 class _AudioScreenState extends State<AudioScreen> {
-  late final AudioPlayer _audioPlayer;
+  YoutubePlayerController? _ytController;
   final SingleAudioApiController controller = Get.put(SingleAudioApiController());
-  final yt.YoutubeExplode _yt = yt.YoutubeExplode();
+  bool _isControllerReady = false;
 
   @override
   void initState() {
     super.initState();
-    _audioPlayer = AudioPlayer();
     _loadAudio();
   }
 
@@ -35,6 +32,7 @@ class _AudioScreenState extends State<AudioScreen> {
       if (controller.topPlayList.isEmpty) {
         await controller.singleAudioApiMethod(widget.id);
       }
+
       if (!mounted || controller.topPlayList.isEmpty) return;
 
       final audioItem = controller.topPlayList[0];
@@ -45,69 +43,120 @@ class _AudioScreenState extends State<AudioScreen> {
         return;
       }
 
-      if (url.contains('youtube.com') || url.contains('youtu.be')) {
-        await _loadYouTubeAudio(url);
-      } else {
-        await _audioPlayer.setUrl(url);
-        if (mounted) _audioPlayer.play();
+      debugPrint("Loading YouTube URL: $url");
+
+      final videoId = YoutubePlayer.convertUrlToId(url);
+      if (videoId == null) {
+        _showError("Invalid YouTube URL: $url");
+        return;
+      }
+
+      debugPrint("Extracted Video ID: $videoId");
+
+      // Dispose previous controller if exists
+      _ytController?.removeListener(_youtubeListener);
+      _ytController?.dispose();
+
+      _ytController = YoutubePlayerController(
+        initialVideoId: videoId,
+        flags: const YoutubePlayerFlags(
+          autoPlay: true,
+          mute: false,
+          enableCaption: false,
+          showLiveFullscreenButton: false,
+          controlsVisibleAtStart: false,
+          hideControls: true,
+          loop: false,
+        ),
+      );
+
+      _ytController!.addListener(_youtubeListener);
+      
+      // Wait a bit for controller to initialize
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      if (mounted) {
+        setState(() {
+          _isControllerReady = true;
+        });
       }
     } catch (e) {
+      debugPrint("Load Audio Error: $e");
       _showError("Failed to load audio: $e");
     }
   }
 
-  Future<void> _loadYouTubeAudio(String url) async {
-    try {
-      final videoId = yt.VideoId(url);
-      final manifest = await _yt.videos.streamsClient.getManifest(videoId);
-      
-      // Corrected: Simply get the highest bitrate audio-only stream
-      final streamInfo = manifest.audioOnly.withHighestBitrate();
+  void _youtubeListener() {
+    if (!mounted || _ytController == null) return;
 
-      await _audioPlayer.setUrl(streamInfo.url.toString());
-      if (mounted) _audioPlayer.play();
+    final value = _ytController!.value;
 
-    } catch (e) {
-      debugPrint("YouTube Error: $e");
-      if (mounted) {
-        Get.snackbar(
-          "YouTube Error",
-          "Cannot play YouTube audio.",
-          backgroundColor: Colors.orange,
-          colorText: Colors.white,
-        );
-        controller.errorMessage.value = "YouTube playback failed";
-      }
+    // Update ready state
+    if (value.isReady && !_isControllerReady) {
+      setState(() {
+        _isControllerReady = true;
+      });
+    }
+
+    // Auto-play fix
+    if (value.isReady && !value.isPlaying && value.position.inMilliseconds == 0) {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted && _ytController != null && _ytController!.value.isReady) {
+          try {
+            _ytController!.play();
+          } catch (e) {
+            debugPrint("Play error: $e");
+            _showError("Failed to play audio: $e");
+          }
+        }
+      });
+    }
+
+    // On End
+    if (value.playerState == PlayerState.ended) {
+      final audioItem = controller.topPlayList[0];
+      final session = Session(
+        image: audioItem.thumbnail,
+        title: audioItem.title,
+        subtitle: audioItem.afterText,
+        duration: Duration(seconds: value.metaData.duration.inSeconds),
+        audioPath: audioItem.file,
+      );
+      Get.off(() => AudioWinerWidget(session: session));
+    }
+
+    // Check for unplayable state (error indicator)
+    if (value.playerState == PlayerState.unknown) {
+      debugPrint("YouTube Player State: Unknown - may indicate error");
     }
   }
 
   void _handlePlayPause() {
-    _audioPlayer.playing ? _audioPlayer.pause() : _audioPlayer.play();
+    if (_ytController == null) return;
+    _ytController!.value.isPlaying ? _ytController!.pause() : _ytController!.play();
   }
 
   void _handleSeek(Duration position) {
-    _audioPlayer.seek(position);
+    _ytController?.seekTo(position);
   }
 
   void _showError(String msg) {
-    if (mounted) {
-      controller.errorMessage.value = msg;
-    }
+    if (mounted) controller.errorMessage.value = msg;
   }
 
   @override
   void dispose() {
-    _audioPlayer.dispose();
-    _yt.close();
+    _ytController?.removeListener(_youtubeListener);
+    _ytController?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.black,
       body: Obx(() {
-        if (controller.isLoading.value && controller.topPlayList.isEmpty) {
+        if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator(color: Colors.white));
         }
 
@@ -139,7 +188,10 @@ class _AudioScreenState extends State<AudioScreen> {
         return Stack(
           fit: StackFit.expand,
           children: [
+            // Background
             Image.asset("assets/images/21. Home - V2-3.png", fit: BoxFit.cover),
+
+            // App Bar
             Positioned(
               top: 0,
               left: 0,
@@ -150,72 +202,96 @@ class _AudioScreenState extends State<AudioScreen> {
                   child: AudioAppBarWidget(
                     title: audioItem.title,
                     onBackPressed: () {
-                      _audioPlayer.stop();
+                      _ytController?.pause();
                       Get.back();
                     },
                   ),
                 ),
               ),
             ),
+
+            // Thumbnail (100% Safe)
             Center(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(24),
-                child: Image.network(
-                  audioItem.thumbnail,
+                child: CachedNetworkImage(
+                  imageUrl: audioItem.thumbnail,
                   width: 180,
                   height: 180,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+                  placeholder: (_, __) => Container(
                     width: 180,
                     height: 180,
                     color: Colors.grey[700],
-                    child: const Icon(Icons.music_note, size: 60, color: Colors.white),
+                    child: const Center(child: CircularProgressIndicator(color: Colors.white)),
                   ),
+                  errorWidget: (_, url, error) {
+                    debugPrint("Image load failed: $url → $error");
+                    return Container(
+                      width: 180,
+                      height: 180,
+                      color: Colors.grey[700],
+                      child: const Icon(Icons.music_note, size: 60, color: Colors.white),
+                    );
+                  },
                 ),
               ),
             ),
+
+            // Hidden YouTube Player (Audio Only)
+            if (_ytController != null && _ytController!.initialVideoId.isNotEmpty)
+              Positioned(
+                top: -9999, // Off-screen
+                left: 0,
+                child: SizedBox(
+                  width: 1,
+                  height: 1,
+                  child: Opacity(
+                    opacity: 0,
+                    child: YoutubePlayer(
+                      controller: _ytController!,
+                      showVideoProgressIndicator: false,
+                      onReady: () {
+                        debugPrint("YouTube Player Ready");
+                        if (mounted) {
+                          setState(() {
+                            _isControllerReady = true;
+                          });
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              ),
+
+            // Custom Progress Bar
             Positioned(
               bottom: 40,
               left: 20,
               right: 20,
-              child: StreamBuilder<PlayerState>(
-                stream: _audioPlayer.playerStateStream,
-                builder: (context, snapshot) {
-                  final playerState = snapshot.data;
-                  final isPlaying = playerState?.playing ?? false;
-                  final processingState = playerState?.processingState;
-
-                  if (processingState == ProcessingState.completed) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (!mounted) return;
-
-                      final session = Session(
-                        image: audioItem.thumbnail,
-                        title: audioItem.title,
-                        subtitle: audioItem.afterText,
-                        duration: _audioPlayer.duration ?? Duration.zero,
-                        audioPath: audioItem.file,
-                      );
-
-                      _audioPlayer.stop();
-                      Get.off(() => AudioWinerWidget(session: session));
-                    });
+              child: _ytController == null || !_isControllerReady
+                  ? const SizedBox()
+                  : ValueListenableBuilder<YoutubePlayerValue>(
+                valueListenable: _ytController!,
+                builder: (context, value, child) {
+                  // Skip if not ready or in unknown state
+                  if (!value.isReady || value.playerState == PlayerState.unknown) {
+                    return const SizedBox();
                   }
+                  
+                  final position = Duration(seconds: value.position.inSeconds);
+                  final duration = value.metaData.duration.inSeconds > 0
+                      ? Duration(seconds: value.metaData.duration.inSeconds)
+                      : Duration.zero;
 
-                  return StreamBuilder<Duration>(
-                    stream: _audioPlayer.positionStream,
-                    builder: (context, snapshot) {
-                      final position = snapshot.data ?? Duration.zero;
-                      final duration = _audioPlayer.duration ?? const Duration(seconds: 30);
-
-                      return CustomLinerProgressIndicatorWidget(
-                        startTime: position,
-                        endTime: duration,
-                        isPlaying: isPlaying,
-                        onPlayPause: _handlePlayPause,
-                        onSeek: _handleSeek,
-                      );
-                    },
+                  return CustomLinerProgressIndicatorWidget(
+                    startTime: position,
+                    endTime: duration,
+                    isPlaying: value.isPlaying,
+                    onPlayPause: _handlePlayPause,
+                    onSeek: _handleSeek,
+                    onPrevious: null,
+                    onNext: null,
                   );
                 },
               ),

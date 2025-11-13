@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:edwardsrt/core/app_colors.dart';
 import 'package:edwardsrt/core/style/text_style.dart';
 import 'package:flutter/material.dart';
@@ -51,10 +52,19 @@ class TreatmentsWidget extends StatelessWidget {
                   child: SizedBox(
                     width: 151,
                     height: 82,
-                    child: Image.asset(
-                      image,
+                    child: CachedNetworkImage(
+                      imageUrl: image,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
+                      placeholder: (context, url) => Container(
+                        color: Colors.grey[200],
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) {
                         return Container(
                           color: Colors.grey[200],
                           child: const Icon(Icons.image, color: Colors.grey),

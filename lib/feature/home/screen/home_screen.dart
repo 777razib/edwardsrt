@@ -71,10 +71,17 @@ class _HomeScreenState extends State<HomeScreen> {
         child: CustomScrollView(
           slivers: [
             // AppBar
-             SliverToBoxAdapter(
-              child: HomeAppBar(
-                profileImage: '${item.profileImage}',
-                title: "${item.firstName} ${item.lastName}",
+            SliverToBoxAdapter(
+              child: item == null
+                  ? const Center(child: CircularProgressIndicator())
+                  : HomeAppBar(
+                profileImage: item.profileImage?.isNotEmpty == true ? item.profileImage : null,
+                title: [
+                  item.firstName ?? '',
+                  item.lastName ?? '',
+                ].join(' ').trim().isEmpty
+                    ? 'Guest User'
+                    : '${item.firstName ?? ''} ${item.lastName ?? ''}'.trim(),
                 subtitle: "What do you want to hear today?",
               ),
             ),
