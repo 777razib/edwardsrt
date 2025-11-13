@@ -1,62 +1,30 @@
-// lib/dialog/play_dialog_box_widget.dart
 import 'package:edwardsrt/core/app_colors.dart';
 import 'package:edwardsrt/core/style/text_style.dart';
-import 'package:edwardsrt/feature/home/model/session_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../audio/screen/audio_screen.dart';
+import '../../home/controller/all_treatments_controller.dart';
 
-class _SessionController extends GetxController {
+/// Reusable Controller with Tag
+class SessionController extends GetxController {
   final RxInt selectedIndex = (-1).obs;
 
   void select(int index) => selectedIndex.value = index;
+  void reset() => selectedIndex.value = -1;
 }
 
 class SessionGuideWidget extends StatelessWidget {
   SessionGuideWidget({super.key});
 
-  final List<Session> sessions = [
-    Session(
-      image: 'assets/images/mehreen.jpg',
-      title: 'Mehreen',
-      subtitle: 'Tumi Acho Bole',
-      duration: const Duration(minutes: 3),
-      audioPath: 'assets/audio/MEHREEN  TUMI ACHO BOLE (তম আছ বল)  OFFICIAL VDO.mp3',
-    ),
-    Session(
-      image: 'assets/images/session_2.png',
-      title: 'Session 2: Morning Boost',
-      subtitle: '5 min • Energizing',
-      duration: const Duration(minutes: 5),
-      audioPath: 'assets/audio/session_2.mp3',
-    ),
-    Session(
-      image: 'assets/images/session_3.png',
-      title: 'Session 3: Sleep Prep',
-      subtitle: '15 min • Calming',
-      duration: const Duration(minutes: 15),
-      audioPath: 'assets/audio/session_3.mp3',
-    ),
-    Session(
-      image: 'assets/images/session_4.png',
-      title: 'Session 4: Focus Flow',
-      subtitle: '8 min • Productive',
-      duration: const Duration(minutes: 8),
-      audioPath: 'assets/audio/session_4.mp3',
-    ),
-    Session(
-      image: 'assets/images/session_5.png',
-      title: 'Session 5: Stress Relief',
-      subtitle: '12 min • Soothing',
-      duration: const Duration(minutes: 12),
-      audioPath: 'assets/audio/session_5.mp3',
-    ),
-  ];
+  // Unique tag for controller
+  final String _controllerTag =
+      'session_guide_${DateTime.now().millisecondsSinceEpoch}';
 
   @override
   Widget build(BuildContext context) {
-    final ctrl = Get.put(_SessionController());
+    // Initialize tagged controller
+    final ctrl = Get.put(SessionController(), tag: _controllerTag);
 
     return Container(
       width: 304.6,
@@ -72,22 +40,46 @@ class SessionGuideWidget extends StatelessWidget {
           // ---------- Session List ----------
           SizedBox(
             height: 340,
-            child: ListView.separated(
-              shrinkWrap: true,
-              physics: const BouncingScrollPhysics(),
-              itemCount: sessions.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                return Obx(() {
-                  final session = sessions[index];
-                  final isSelected = ctrl.selectedIndex.value == index;
-
-                  return _NewWidget(
-                    session: session,
-                    isSelected: isSelected,
-                    onTap: () => ctrl.select(index),
+            child: GetBuilder<AllTreatmentsController>(
+              builder: (controller) {
+                if (controller.isLoading.value) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: AppColors.primary),
                   );
-                });
+                }
+
+                if (controller.topPlayList.isEmpty) {
+                  return Center(
+                    child: Text(
+                      "No treatments available",
+                      style: globalTextStyle(
+                        fontSize: 14,
+                        color: AppColors.blackColor.withOpacity(0.6),
+                      ),
+                    ),
+                  );
+                }
+
+                return ListView.separated(
+                  shrinkWrap: true,
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: controller.topPlayList.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final treatment = controller.topPlayList[index];
+                    final isSelected = ctrl.selectedIndex.value == index;
+
+                    return _NewWidget(
+                      title: treatment.title,
+                      subtitle: treatment.howToStart.isNotEmpty
+                          ? (treatment.howToStart[0].subtitle ?? "No subtitle")
+                          : "No subtitle",
+                      image: treatment.thumbnail,
+                      isSelected: isSelected,
+                      onTap: () => ctrl.select(index),
+                    );
+                  },
+                );
               },
             ),
           ),
@@ -104,7 +96,6 @@ class SessionGuideWidget extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Mascot Icon
                 SizedBox(
                   height: 49.19,
                   width: 42.6,
@@ -114,19 +105,21 @@ class SessionGuideWidget extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-
-                // Text Part - Wrap with Expanded to prevent overflow
                 Expanded(
                   child: RichText(
                     text: TextSpan(
-                      style: globalTextStyle(fontSize: 14, color: AppColors.blackColor),
+                      style: globalTextStyle(
+                        fontSize: 14,
+                        color: AppColors.blackColor,
+                      ),
                       children: [
                         TextSpan(
                           text: 'Note: ',
                           style: globalTextStyle(fontWeight: FontWeight.w600),
                         ),
                         const TextSpan(
-                          text: 'You may feel slightly tired after the session — rest for a few minutes if needed.',
+                          text:
+                          'You may feel slightly tired after the session — rest for a few minutes if needed.',
                         ),
                       ],
                     ),
@@ -140,20 +133,31 @@ class SessionGuideWidget extends StatelessWidget {
 
           // ---------- Start Button ----------
           Obx(() {
-            final canStart = ctrl.selectedIndex.value != -1;
+            final selectedIdx = ctrl.selectedIndex.value;
+            final canStart = selectedIdx != -1;
+            //final _controllerTag=treatment.id ;
             return GestureDetector(
+
               onTap: canStart
                   ? () {
-                final selected = sessions[ctrl.selectedIndex.value];
+                final allTreatmentsCtrl =
+                Get.find<AllTreatmentsController>();
+                final treatment =
+                allTreatmentsCtrl.topPlayList[selectedIdx];
+
                 Get.back(); // Close dialog
-                Get.to(() => AudioScreen(id: "",));
+
+                // Navigate to AudioScreen with real treatment ID
+                Get.to(() => AudioScreen(id: treatment.id));
               }
                   : null,
               child: Container(
                 width: double.infinity,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: canStart ? AppColors.primary : AppColors.primary.withOpacity(0.4),
+                  color: canStart
+                      ? AppColors.primary
+                      : AppColors.primary.withOpacity(0.4),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 alignment: Alignment.center,
@@ -174,16 +178,20 @@ class SessionGuideWidget extends StatelessWidget {
   }
 }
 
-
+/// Reusable Widget (Network Image + Selection)
 class _NewWidget extends StatelessWidget {
   const _NewWidget({
     super.key,
-    required this.session,
+    required this.title,
+    required this.subtitle,
+    required this.image,
     required this.isSelected,
     required this.onTap,
   });
 
-  final Session session;
+  final String title;
+  final String subtitle;
+  final String image;
   final bool isSelected;
   final VoidCallback onTap;
 
@@ -209,13 +217,17 @@ class _NewWidget extends StatelessWidget {
               child: SizedBox(
                 width: 48,
                 height: 48,
-                child: Image.asset(
-                  session.image,
+                child: Image.network(
+                  image,
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => Container(
                     color: Colors.grey[200],
                     child: const Icon(Icons.music_note, color: Colors.grey),
                   ),
+                  loadingBuilder: (_, child, progress) => progress == null
+                      ? child
+                      : const Center(
+                      child: CircularProgressIndicator(strokeWidth: 2)),
                 ),
               ),
             ),
@@ -225,18 +237,20 @@ class _NewWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    session.title,
+                    title,
                     style: globalTextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: isSelected ? AppColors.whiteColor : AppColors.blackColor,
+                      color: isSelected
+                          ? AppColors.whiteColor
+                          : AppColors.blackColor,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    session.subtitle,
+                    subtitle,
                     style: globalTextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w400,

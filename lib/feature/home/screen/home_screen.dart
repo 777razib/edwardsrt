@@ -127,8 +127,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemBuilder: (context, index) {
                           final item = allTreatmentsController.topPlayList[index];
                           return TreatmentsWidget(
-                            image: item.thumbnail,
-                            title: item.title,
+                            image: item.howToStart[0].image,
+                            title: item.howToStart[0].title,
                             buttonText: "How to start".tr,
                             onTap: () => _showPlaySessionDialog(index),
                           );
@@ -164,8 +164,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: AudioPlayWidget(
-                            image: item.thumbnail,
-                            title: item.title,
+                            image: item.howToStart[0].image,
+                            title: item.howToStart[0].title,
                             subTitle: item.howToStart.isNotEmpty ? item.howToStart[0].subtitle : "Relax",
                             audioUrl: item.file,
                           ),

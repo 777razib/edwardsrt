@@ -20,6 +20,7 @@ class _AudioScreenState extends State<AudioScreen> {
   YoutubePlayerController? _ytController;
   final SingleAudioApiController controller = Get.put(SingleAudioApiController());
   bool _isControllerReady = false;
+  Duration _cachedDuration = Duration.zero;
 
   @override
   void initState() {
@@ -57,6 +58,9 @@ class _AudioScreenState extends State<AudioScreen> {
       _ytController?.removeListener(_youtubeListener);
       _ytController?.dispose();
 
+      // Reset cached duration for new audio
+      _cachedDuration = Duration.zero;
+
       _ytController = YoutubePlayerController(
         initialVideoId: videoId,
         flags: const YoutubePlayerFlags(
@@ -72,8 +76,19 @@ class _AudioScreenState extends State<AudioScreen> {
 
       _ytController!.addListener(_youtubeListener);
       
-      // Wait a bit for controller to initialize
-      await Future.delayed(const Duration(milliseconds: 500));
+      // Wait for controller to initialize and metadata to load
+      // Try multiple times to get duration
+      for (int i = 0; i < 5; i++) {
+        await Future.delayed(const Duration(milliseconds: 500));
+        if (mounted && _ytController != null) {
+          final durationSeconds = _ytController!.value.metaData.duration.inSeconds;
+          if (durationSeconds > 30) {
+            _cachedDuration = Duration(seconds: durationSeconds);
+            debugPrint("Duration loaded during init (attempt ${i + 1}): ${_cachedDuration.inHours}h ${_cachedDuration.inMinutes.remainder(60)}m ${_cachedDuration.inSeconds.remainder(60)}s");
+            break;
+          }
+        }
+      }
       
       if (mounted) {
         setState(() {
@@ -98,6 +113,20 @@ class _AudioScreenState extends State<AudioScreen> {
       });
     }
 
+    // Cache duration when it becomes available
+    // Only update if duration is reasonable (more than 30 seconds) to avoid initial wrong values
+    final durationSeconds = value.metaData.duration.inSeconds;
+    if (durationSeconds > 30 && _cachedDuration.inSeconds != durationSeconds) {
+      _cachedDuration = Duration(seconds: durationSeconds);
+      debugPrint("Duration updated: ${_cachedDuration.inHours}h ${_cachedDuration.inMinutes.remainder(60)}m ${_cachedDuration.inSeconds.remainder(60)}s (${durationSeconds}s total)");
+      if (mounted) {
+        setState(() {}); // Trigger rebuild to update UI
+      }
+    } else if (durationSeconds > 0 && durationSeconds <= 30 && _cachedDuration.inSeconds == 0) {
+      // Log but don't cache short durations (likely initial wrong value)
+      debugPrint("Ignoring initial duration: ${durationSeconds}s (too short, likely wrong)");
+    }
+
     // Auto-play fix
     if (value.isReady && !value.isPlaying && value.position.inMilliseconds == 0) {
       Future.delayed(const Duration(milliseconds: 300), () {
@@ -112,23 +141,49 @@ class _AudioScreenState extends State<AudioScreen> {
       });
     }
 
-    // On End
+    // Check if audio has ended - multiple ways to detect
+    final duration = _cachedDuration.inSeconds > 0 ? _cachedDuration.inSeconds : durationSeconds;
+    final position = value.position.inSeconds;
+    
+    // Method 1: Check player state
     if (value.playerState == PlayerState.ended) {
-      final audioItem = controller.topPlayList[0];
-      final session = Session(
-        image: audioItem.thumbnail,
-        title: audioItem.title,
-        subtitle: audioItem.afterText,
-        duration: Duration(seconds: value.metaData.duration.inSeconds),
-        audioPath: audioItem.file,
-      );
-      Get.off(() => AudioWinerWidget(session: session));
+      _handleAudioEnd();
+      return;
+    }
+
+    // Method 2: Check if position reached duration (with small tolerance)
+    if (duration > 0 && position > 0 && position >= duration - 1) {
+      _handleAudioEnd();
+      return;
     }
 
     // Check for unplayable state (error indicator)
     if (value.playerState == PlayerState.unknown) {
       debugPrint("YouTube Player State: Unknown - may indicate error");
     }
+  }
+
+  void _handleAudioEnd() {
+    if (!mounted || controller.topPlayList.isEmpty) return;
+    
+    // Prevent multiple calls
+    _ytController?.removeListener(_youtubeListener);
+    
+    final audioItem = controller.topPlayList[0];
+    final session = Session(
+      image: audioItem.thumbnail,
+      title: audioItem.title,
+      subtitle: audioItem.afterText,
+      duration: Duration(seconds: _ytController?.value.metaData.duration.inSeconds ?? 0),
+      audioPath: audioItem.file,
+    );
+    
+    // Small delay to ensure UI updates
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted) {
+        Get.off(() => AudioWinerWidget(session: session));
+      }
+    });
   }
 
   void _handlePlayPause() {
@@ -253,11 +308,22 @@ class _AudioScreenState extends State<AudioScreen> {
                       showVideoProgressIndicator: false,
                       onReady: () {
                         debugPrint("YouTube Player Ready");
-                        if (mounted) {
-                          setState(() {
-                            _isControllerReady = true;
-                          });
-                        }
+                        // Wait for metadata to load properly
+                        Future.delayed(const Duration(milliseconds: 1000), () {
+                          if (mounted && _ytController != null) {
+                            final durationSeconds = _ytController!.value.metaData.duration.inSeconds;
+                            // Only cache if duration is reasonable (more than 30 seconds)
+                            if (durationSeconds > 30) {
+                              _cachedDuration = Duration(seconds: durationSeconds);
+                              debugPrint("Duration loaded in onReady: ${_cachedDuration.inHours}h ${_cachedDuration.inMinutes.remainder(60)}m ${_cachedDuration.inSeconds.remainder(60)}s (${durationSeconds}s total)");
+                            } else if (durationSeconds > 0) {
+                              debugPrint("Duration in onReady too short (${durationSeconds}s), waiting for update...");
+                            }
+                            setState(() {
+                              _isControllerReady = true;
+                            });
+                          }
+                        });
                       },
                     ),
                   ),
@@ -280,9 +346,26 @@ class _AudioScreenState extends State<AudioScreen> {
                   }
                   
                   final position = Duration(seconds: value.position.inSeconds);
-                  final duration = value.metaData.duration.inSeconds > 0
-                      ? Duration(seconds: value.metaData.duration.inSeconds)
+                  
+                  // Use cached duration if available and valid, otherwise try metadata (but ignore short durations)
+                  final metaDurationSeconds = value.metaData.duration.inSeconds;
+                  final durationSeconds = _cachedDuration.inSeconds > 0 
+                      ? _cachedDuration.inSeconds 
+                      : (metaDurationSeconds > 30 ? metaDurationSeconds : 0);
+                  
+                  final duration = durationSeconds > 0
+                      ? Duration(seconds: durationSeconds)
                       : Duration.zero;
+
+                  // Only show progress bar if we have valid duration (more than 30 seconds)
+                  if (duration.inSeconds == 0 || duration.inSeconds <= 30) {
+                    return const SizedBox(); // Hide until valid duration is loaded
+                  }
+
+                  // Debug log periodically
+                  if (position.inSeconds % 10 == 0 && position.inSeconds > 0) {
+                    debugPrint("Progress: ${position.inSeconds}s / ${duration.inSeconds}s");
+                  }
 
                   return CustomLinerProgressIndicatorWidget(
                     startTime: position,

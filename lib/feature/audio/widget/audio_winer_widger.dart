@@ -46,7 +46,7 @@ class AudioWinerWidget extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Text(
-                session.subtitle, // Use the subtitle from the session
+                session.afterText??'', // Use the subtitle from the session
                 textAlign: TextAlign.center,
                 style: globalTextStyle(
                   fontWeight: FontWeight.w600,
