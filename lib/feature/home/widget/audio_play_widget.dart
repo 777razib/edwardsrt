@@ -121,8 +121,7 @@ class _AudioPlayWidgetState extends State<AudioPlayWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+    return Stack(
       children: [
         Container(
           height: 84,
