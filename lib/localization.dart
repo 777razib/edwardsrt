@@ -18,6 +18,7 @@ class AppLocalization extends Translations {
       "login": "Log-in",
       "noAccount": "Don’t have an Account?",
       "signUp": "Sign Up",
+      "topPlaylists" : "Top Playlists",
       "firstName": "First Name",
       "enterFirstName": "Enter your first name",
       "lastName": "Last Name",
@@ -138,6 +139,7 @@ class AppLocalization extends Translations {
       "sessionNote":
           "قد تشعر بقليل من التعب بعد الجلسة — ارتح لبضع دقائق إذا لزم الأمر.",
       "treatments": "العلاجات",
+      "topPlaylists" : "قوائم التشغيل الرائجة",
       "startSession": "بدء الجلسة",
       "quickReset": "إعادة ضبط سريعة (5 دقائق)",
       "deepClean": "تنظيف عميق (20 دقيقة)",
@@ -236,6 +238,7 @@ class AppLocalization extends Translations {
       "sessionNote":
           "सत्र के बाद आपको थोड़ी थकान महसूस हो सकती है — आवश्यकता हो तो कुछ मिनट आराम करें।",
       "treatments": "उपचार",
+      "topPlaylists" : "शीर्ष प्लेलिस्ट",
       "startSession": "सत्र शुरू करें",
       "quickReset": "त्वरित रीसेट (5 मिनट)",
       "deepClean": "गहरा सफाई (20 मिनट)",
@@ -330,6 +333,7 @@ class AppLocalization extends Translations {
       "note": "注意：",
       "sessionNote": "会话后您可能会感到轻微疲劳 — 如有需要，请休息几分钟。",
       "treatments": "疗法",
+      "topPlaylists" : "热门播放列表",
       "startSession": "开始会话",
       "quickReset": "快速重置 (5分钟)",
       "deepClean": "深度清洁 (20分钟)",

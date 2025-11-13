@@ -34,18 +34,19 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showPlaySessionDialog(int treatmentIndex) {
     final controller = Get.find<AllTreatmentsController>();
 
+    // Loading state check
     if (controller.isLoading.value) {
-      Get.snackbar("Loading", "Please wait, treatments are loading...");
+      Get.snackbar("Loading".tr, "Please wait, treatments are loading...".tr);
       return;
     }
 
     if (controller.topPlayList.isEmpty) {
-      Get.snackbar("Empty", "No treatments available.");
+      Get.snackbar("Empty".tr, "No treatments available.".tr);
       return;
     }
 
     if (treatmentIndex >= controller.topPlayList.length) {
-      Get.snackbar("Error", "Invalid treatment selected.");
+      Get.snackbar("Error".tr, "Invalid treatment selected.".tr);
       return;
     }
 
@@ -67,6 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
+            // AppBar
             SliverToBoxAdapter(
               child: Obx(() {
                 final user = profileApiController.userProfile.value;
@@ -87,15 +89,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 delegate: SliverChildListDelegate([
                   // Purchase Button
                   PurchaseNowButtonWidget(
-                    title: "One purchase.".tr,
-                    subTitle: "Endless relaxation".tr,
-                    buttonText: "Purchase now".tr,
+                    title: "onePurchase".tr,
+                    subTitle: "Endless relaxation".tr, // This might need a separate key if you want to translate it differently.
+                    buttonText: "purchaseNow".tr,
                     onTap: () => Get.to(() => PurchaseOneTimeScreen()),
                   ),
                   const SizedBox(height: 24),
 
                   // Treatments Section
-                  Text("Treatments".tr, style: globalTextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+                  Text("treatments".tr, style: globalTextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
                   const SizedBox(height: 12),
 
                   // Horizontal List (Treatments)
@@ -112,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       }
                       if (allTreatmentsController.topPlayList.isEmpty) {
-                        return Center(child: Text("No treatments".tr));
+                        return  Center(child: Text("No treatments available.".tr));
                       }
 
                       return ListView.separated(
@@ -124,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           return TreatmentsWidget(
                             image: item.howToStart[0].image,
                             title: item.howToStart[0].title,
-                            buttonText: "How to start".tr,
+                            buttonText: "startSession".tr,
                             onTap: () => _showPlaySessionDialog(index),
                           );
                         },
@@ -149,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     }
                     if (topPlayListController.topPlayList.isEmpty) {
-                      return Center(child: Text("No playlists".tr));
+                      return  Center(child: Text("No playlists".tr));
                     }
 
                     return Column(
@@ -161,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: AudioPlayWidget(
                             image: item.howToStart[0].image,
                             title: item.howToStart[0].title,
-                            subTitle: item.howToStart.isNotEmpty ? item.howToStart[0].subtitle : "Relax",
+                            subTitle: item.howToStart.isNotEmpty ? item.howToStart[0].subtitle : "Relax".tr,
                             audioUrl: item.file,
                           ),
                         );
@@ -184,7 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Text(message, style: const TextStyle(color: Colors.red)),
           const SizedBox(height: 8),
-          ElevatedButton(onPressed: onRetry, child: const Text("Retry")),
+          ElevatedButton(onPressed: onRetry, child: Text("Retry".tr)),
         ],
       ),
     );
