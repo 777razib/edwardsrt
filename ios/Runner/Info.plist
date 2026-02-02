@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Edwardsrt</string>
+	<string>Mind Cleanser</string>
 
 	<key>LSApplicationQueriesSchemes</key>
     <array>
