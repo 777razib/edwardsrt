@@ -53,5 +53,38 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- Camera (mobile_scanner, image_picker) -->
+<key>NSCameraUsageDescription</key>
+<string>This app needs camera access to scan QR codes and take photos.</string>
+
+<!-- Photo Library (image_picker, file_picker) -->
+<key>NSPhotoLibraryUsageDescription</key>
+<string>This app needs photo access to upload images.</string>
+
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>This app needs access to save photos.</string>
+
+<!-- Microphone (video/audio player, recorder if used) -->
+<key>NSMicrophoneUsageDescription</key>
+<string>This app needs microphone access for audio features.</string>
+
+<!-- Media Library (audio/video) -->
+<key>NSAppleMusicUsageDescription</key>
+<string>This app needs media access for playing audio.</string>
+
+<!-- File Access -->
+<key>UIFileSharingEnabled</key>
+<true/>
+
+<key>LSSupportsOpeningDocumentsInPlace</key>
+<true/>
+
+<!-- Internet -->
+<key>NSAppTransportSecurity</key>
+<dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
+</dict>
+
 </dict>
 </plist>
