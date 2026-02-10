@@ -12,36 +12,35 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   get: ^4.7.2
-  persistent_bottom_nav_bar_v2: ^6.1.0
+  
   shimmer: ^3.0.0
   file_picker: ^10.3.3
-  intl: ^0.20.2
+  
   mobile_scanner: ^7.1.3
   shared_preferences: ^2.5.3
   http: ^1.5.0
   logger: ^2.6.2
-  image_picker: ^1.2.0
-  permission_handler: ^12.0.1
+  
+  
   google_fonts: ^6.3.2
   chewie: ^1.13.0
-  video_player: ^2.10.0
-  lottie: ^3.3.1
+  video_player: ^2.10.1
+  
   cached_network_image: ^3.4.1
   flutter_easyloading: ^3.0.5
-  flutter_dotenv: ^6.0.0
+  
   just_audio: ^0.10.5
-  url_launcher: ^6.2.6
-  youtube_explode_dart: ^3.0.5
+  
+  
   youtube_player_flutter: ^9.1.3
-  launcher_name: ^1.0.2
-  change_app_package_name: ^1.5.0
-  flutter_launcher_icons: ^0.14.4
-  rename: ^3.1.0
+
 
   flutter_localizations:
-    sdk: flutter # Correct location for this dependency
-  youtube_player_iframe: ^5.2.2
-  flutter_inappwebview: ^6.1.5
+    sdk: flutter 
+  url_launcher: ^6.3.2
+  wakelock_plus: ^1.4.0
+  
+ 
 
 flutter_launcher_icons:
   android: true
